@@ -4,7 +4,7 @@ const studentId = '36667838'
 
 const githubProfileUrl = 'https://github.com/transient1y1'
 const githubRepositoryUrl =
-  'https://github.com/fit5047-students/transient1y1'
+  'https://github.com/Transient1y1/FIT5032_2025_Yucheng_Ding_36667838'
 </script>
 
 <template>

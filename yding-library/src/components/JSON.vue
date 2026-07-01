@@ -10,12 +10,7 @@
       <h3>Iterating through Arrays</h3>
       <!-- Activity 6: Render a list containing author names and their birth years. Hint: Make use of the v-for directive to iterate through the array of authors. -->
       <ul>
-        <li
-          v-for="author in authors"
-          :key="author.id"
-          :class="{ highlight: author.name === 'George Orwell' }"
-          :style="authorStyles(author)"
-        >
+        <li v-for="author in authors" :key="author.id">
           {{ author.name }} ({{ author.birthYear }})
         </li>
       </ul>
@@ -102,7 +97,6 @@
       <h2>v-if & v-else</h2>
       <p>Toggle visibility based on a condition.</p>
       <!-- Activity 13: Toggle the message visibility when the button is clicked. -->
-      <!-- TODO: CODE TO TOGGLE MESSAGE VISIBILITY HERE. Hint: Use the v-if directive. -->
       <button @click="showMessage = !showMessage">Toggle Message</button>
       <p v-if="showMessage" class="message success">
         ✨ You're a Vue superstar! ✨
@@ -115,7 +109,17 @@
       <p>Highlighting Specific Authors:</p>
       <!-- Activity 14: Use v-bind with class and style to highlight author "George Orwell". -->
       <!-- Hint: Use :class and :style together on the author list items. -->
-      <p>George Orwell is highlighted automatically in the list above.</p>
+      <ul>
+        <li v-for="author in authors" :key="`activity-14-${author.id}`">
+          <span
+            :class="{ highlight: author.name === 'George Orwell' }"
+            :style="authorStyles(author)"
+          >
+            {{ author.name }}
+          </span>
+          ({{ author.birthYear }})
+        </li>
+      </ul>
     </section>
   </div>
 </template>
@@ -155,6 +159,8 @@ const authorStyles = (author) => {
     backgroundColor: isOrwell ? "#42b883" : "#f0f0f0",
     color: isOrwell ? "#ffffff" : "#333333",
     cursor: "default",
+    padding: isOrwell ? "2px 6px" : "0",
+    borderRadius: isOrwell ? "4px" : "0",
   }
 }
 </script>

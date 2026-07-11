@@ -35,7 +35,7 @@
 
           <div class="row mb-3">
             <div class="col-md-6">
-              <div class="form-check">
+              <div class="form-check mt-4">
                 <input
                   id="isAustralian"
                   v-model="formData.isAustralian"
@@ -62,6 +62,9 @@
                 v-model="formData.gender"
                 class="form-select"
               >
+                <option value="" disabled>
+                  Select gender
+                </option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="other">Other</option>
@@ -99,35 +102,97 @@
             </button>
           </div>
         </form>
+
+        <div
+          v-if="submittedCards.length"
+          class="row mt-5"
+        >
+          <div class="d-flex flex-wrap justify-content-start">
+            <div
+              v-for="(card, index) in submittedCards"
+              :key="index"
+              class="card m-2"
+              style="width: 18rem"
+            >
+              <div class="card-header">
+                User Information
+              </div>
+
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                  Username: {{ card.username }}
+                </li>
+
+                <li class="list-group-item">
+                  Password: {{ card.password }}
+                </li>
+
+                <li class="list-group-item">
+                  Australian Resident:
+                  {{ card.isAustralian ? 'Yes' : 'No' }}
+                </li>
+
+                <li class="list-group-item">
+                  Gender: {{ card.gender }}
+                </li>
+
+                <li class="list-group-item">
+                  Reason: {{ card.reason }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { ref } from 'vue'
 
-const formData = reactive({
+const formData = ref({
   username: '',
   password: '',
   isAustralian: false,
-  gender: 'male',
+  gender: '',
   reason: ''
 })
 
+const submittedCards = ref([])
+
 const submitForm = () => {
-  console.log('Form submitted:', formData)
+  submittedCards.value.push({
+    ...formData.value
+  })
 }
 
 const clearForm = () => {
-  formData.username = ''
-  formData.password = ''
-  formData.isAustralian = false
-  formData.gender = 'male'
-  formData.reason = ''
+  formData.value = {
+    username: '',
+    password: '',
+    isAustralian: false,
+    gender: '',
+    reason: ''
+  }
 }
 </script>
 
 <style scoped>
-</style>
+.card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
+.card-header {
+  background-color: #275fda;
+  color: white;
+  padding: 10px;
+  border-radius: 10px 10px 0 0;
+}
+
+.list-group-item {
+  padding: 10px;
+}
+</style>

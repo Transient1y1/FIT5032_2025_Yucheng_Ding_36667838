@@ -1,12 +1,20 @@
 <template>
   <div class="container mt-5">
     <div class="row">
-      <div class="col-md-8 offset-md-2">
-        <h1 class="text-center">User Information Form</h1>
+      <!--
+        Breakpoints:
+        sm: 576px and above
+        lg: 992px and above
+      -->
+      <div class="col-sm-10 offset-sm-1 col-lg-8 offset-lg-2">
+        <h1 class="text-center mb-4">
+          User Information Form
+        </h1>
 
         <form @submit.prevent="submitForm">
+          <!-- Username and Password -->
           <div class="row mb-3">
-            <div class="col-md-6">
+            <div class="col-sm-6 mb-3 mb-sm-0">
               <label for="username" class="form-label">
                 Username
               </label>
@@ -19,7 +27,7 @@
               />
             </div>
 
-            <div class="col-md-6">
+            <div class="col-sm-6">
               <label for="password" class="form-label">
                 Password
               </label>
@@ -33,9 +41,10 @@
             </div>
           </div>
 
+          <!-- Australian Resident and Gender -->
           <div class="row mb-3">
-            <div class="col-md-6">
-              <div class="form-check mt-4">
+            <div class="col-sm-6 mb-3 mb-sm-0">
+              <div class="form-check mt-sm-4">
                 <input
                   id="isAustralian"
                   v-model="formData.isAustralian"
@@ -52,7 +61,7 @@
               </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-sm-6">
               <label for="gender" class="form-label">
                 Gender
               </label>
@@ -65,13 +74,23 @@
                 <option value="" disabled>
                   Select gender
                 </option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+
+                <option value="male">
+                  Male
+                </option>
+
+                <option value="female">
+                  Female
+                </option>
+
+                <option value="other">
+                  Other
+                </option>
               </select>
             </div>
           </div>
 
+          <!-- Reason -->
           <div class="mb-3">
             <label for="reason" class="form-label">
               Reason for joining
@@ -85,6 +104,7 @@
             ></textarea>
           </div>
 
+          <!-- Buttons -->
           <div class="text-center">
             <button
               type="submit"
@@ -103,6 +123,7 @@
           </div>
         </form>
 
+        <!-- Submitted Cards -->
         <div
           v-if="submittedCards.length"
           class="row mt-5"

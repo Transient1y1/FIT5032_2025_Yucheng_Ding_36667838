@@ -1,11 +1,6 @@
 <template>
   <div class="container mt-5">
     <div class="row">
-      <!--
-        Breakpoints:
-        sm: 576px and above
-        lg: 992px and above
-      -->
       <div class="col-sm-10 offset-sm-1 col-lg-8 offset-lg-2">
         <h1 class="text-center mb-4">
           User Information Form
@@ -24,8 +19,16 @@
                 v-model="formData.username"
                 type="text"
                 class="form-control"
-                required
+                @blur="() => validateName(true)"
+                @input="() => validateName(false)"
               />
+
+              <div
+                v-if="errors.username"
+                class="text-danger"
+              >
+                {{ errors.username }}
+              </div>
             </div>
 
             <div class="col-sm-6">
@@ -38,10 +41,16 @@
                 v-model="formData.password"
                 type="password"
                 class="form-control"
-                required
-                minlength="4"
-                maxlength="10"
+                @blur="() => validatePassword(true)"
+                @input="() => validatePassword(false)"
               />
+
+              <div
+                v-if="errors.password"
+                class="text-danger"
+              >
+                {{ errors.password }}
+              </div>
             </div>
           </div>
 
@@ -74,7 +83,8 @@
                 id="gender"
                 v-model="formData.gender"
                 class="form-select"
-                required
+                @blur="() => validateGender(true)"
+                @change="() => validateGender(false)"
               >
                 <option value="" disabled>
                   Select gender
@@ -92,6 +102,13 @@
                   Other
                 </option>
               </select>
+
+              <div
+                v-if="errors.gender"
+                class="text-danger"
+              >
+                {{ errors.gender }}
+              </div>
             </div>
           </div>
 
@@ -106,10 +123,16 @@
               v-model="formData.reason"
               class="form-control"
               rows="3"
-              required
-              minlength="10"
-              maxlength="150"
+              @blur="() => validateReason(true)"
+              @input="() => validateReason(false)"
             ></textarea>
+
+            <div
+              v-if="errors.reason"
+              class="text-danger"
+            >
+              {{ errors.reason }}
+            </div>
           </div>
 
           <!-- Buttons -->
@@ -190,10 +213,104 @@ const formData = ref({
 
 const submittedCards = ref([])
 
+const errors = ref({
+  username: null,
+  password: null,
+  gender: null,
+  reason: null
+})
+
+const validateName = (blur) => {
+  if (formData.value.username.length < 3) {
+    if (blur) {
+      errors.value.username =
+        'Name must be at least 3 characters'
+    }
+  } else {
+    errors.value.username = null
+  }
+}
+
+const validatePassword = (blur) => {
+  const password = formData.value.password
+  const minLength = 8
+  const hasUppercase = /[A-Z]/.test(password)
+  const hasLowercase = /[a-z]/.test(password)
+  const hasNumber = /\d/.test(password)
+  const hasSpecialChar =
+    /[!@#$%^&*(),.?":{}|<>]/.test(password)
+
+  if (password.length < minLength) {
+    if (blur) {
+      errors.value.password =
+        `Password must be at least ${minLength} characters long.`
+    }
+  } else if (!hasUppercase) {
+    if (blur) {
+      errors.value.password =
+        'Password must contain at least one uppercase letter.'
+    }
+  } else if (!hasLowercase) {
+    if (blur) {
+      errors.value.password =
+        'Password must contain at least one lowercase letter.'
+    }
+  } else if (!hasNumber) {
+    if (blur) {
+      errors.value.password =
+        'Password must contain at least one number.'
+    }
+  } else if (!hasSpecialChar) {
+    if (blur) {
+      errors.value.password =
+        'Password must contain at least one special character.'
+    }
+  } else {
+    errors.value.password = null
+  }
+}
+
+const validateGender = (blur) => {
+  if (!formData.value.gender) {
+    if (blur) {
+      errors.value.gender =
+        'Please select a gender.'
+    }
+  } else {
+    errors.value.gender = null
+  }
+}
+
+const validateReason = (blur) => {
+  if (formData.value.reason.trim().length < 10) {
+    if (blur) {
+      errors.value.reason =
+        'Reason must be at least 10 characters.'
+    }
+  } else {
+    errors.value.reason = null
+  }
+}
+
 const submitForm = () => {
-  submittedCards.value.push({
-    ...formData.value
-  })
+  validateName(true)
+  validatePassword(true)
+  validateGender(true)
+  validateReason(true)
+
+  if (
+    !errors.value.username &&
+    !errors.value.password &&
+    !errors.value.resident &&
+    !errors.value.gender &&
+    !errors.value.reason
+  ) {
+    submittedCards.value.push({
+      ...formData.value
+    })
+
+    clearForm()
+  }
 }
 
 const clearForm = () => {
@@ -203,6 +320,14 @@ const clearForm = () => {
     isAustralian: false,
     gender: '',
     reason: ''
+  }
+
+  errors.value = {
+    username: null,
+    password: null,
+    resident: null,
+    gender: null,
+    reason: null
   }
 }
 </script>

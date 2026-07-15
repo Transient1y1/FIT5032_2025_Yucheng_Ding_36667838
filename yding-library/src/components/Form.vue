@@ -10,7 +10,10 @@
           <!-- Username and Password -->
           <div class="row mb-3">
             <div class="col-sm-6 mb-3 mb-sm-0">
-              <label for="username" class="form-label">
+              <label
+                for="username"
+                class="form-label"
+              >
                 Username
               </label>
 
@@ -32,7 +35,10 @@
             </div>
 
             <div class="col-sm-6">
-              <label for="password" class="form-label">
+              <label
+                for="password"
+                class="form-label"
+              >
                 Password
               </label>
 
@@ -75,7 +81,10 @@
             </div>
 
             <div class="col-sm-6">
-              <label for="gender" class="form-label">
+              <label
+                for="gender"
+                class="form-label"
+              >
                 Gender
               </label>
 
@@ -86,7 +95,10 @@
                 @blur="() => validateGender(true)"
                 @change="() => validateGender(false)"
               >
-                <option value="" disabled>
+                <option
+                  value=""
+                  disabled
+                >
                   Select gender
                 </option>
 
@@ -114,7 +126,10 @@
 
           <!-- Reason -->
           <div class="mb-3">
-            <label for="reason" class="form-label">
+            <label
+              for="reason"
+              class="form-label"
+            >
               Reason for joining
             </label>
 
@@ -154,46 +169,42 @@
           </div>
         </form>
 
-        <!-- Submitted Cards -->
+        <!-- PrimeVue DataTable -->
         <div
           v-if="submittedCards.length"
-          class="row mt-5"
+          class="mt-5"
         >
-          <div class="d-flex flex-wrap justify-content-start">
-            <div
-              v-for="(card, index) in submittedCards"
-              :key="index"
-              class="card m-2"
-              style="width: 18rem"
-            >
-              <div class="card-header">
-                User Information
-              </div>
+          <DataTable
+            :value="submittedCards"
+            stripedRows
+            showGridlines
+            responsiveLayout="scroll"
+          >
+            <Column
+              field="username"
+              header="Username"
+            />
 
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                  Username: {{ card.username }}
-                </li>
+            <Column
+              field="password"
+              header="Password"
+            />
 
-                <li class="list-group-item">
-                  Password: {{ card.password }}
-                </li>
+            <Column
+              field="isAustralian"
+              header="Australian Resident"
+            />
 
-                <li class="list-group-item">
-                  Australian Resident:
-                  {{ card.isAustralian ? 'Yes' : 'No' }}
-                </li>
+            <Column
+              field="gender"
+              header="Gender"
+            />
 
-                <li class="list-group-item">
-                  Gender: {{ card.gender }}
-                </li>
-
-                <li class="list-group-item">
-                  Reason: {{ card.reason }}
-                </li>
-              </ul>
-            </div>
-          </div>
+            <Column
+              field="reason"
+              header="Reason"
+            />
+          </DataTable>
         </div>
       </div>
     </div>
@@ -202,6 +213,8 @@
 
 <script setup>
 import { ref } from 'vue'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
 
 const formData = ref({
   username: '',
@@ -301,7 +314,6 @@ const submitForm = () => {
   if (
     !errors.value.username &&
     !errors.value.password &&
-    !errors.value.resident &&
     !errors.value.gender &&
     !errors.value.reason
   ) {
@@ -325,7 +337,6 @@ const clearForm = () => {
   errors.value = {
     username: null,
     password: null,
-    resident: null,
     gender: null,
     reason: null
   }
@@ -333,20 +344,8 @@ const clearForm = () => {
 </script>
 
 <style scoped>
-.card {
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-  background-color: #275fda;
-  color: white;
-  padding: 10px;
-  border-radius: 10px 10px 0 0;
-}
-
-.list-group-item {
-  padding: 10px;
+.text-danger {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
 }
 </style>

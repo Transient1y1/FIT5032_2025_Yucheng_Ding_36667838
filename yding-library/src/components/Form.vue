@@ -24,6 +24,7 @@
                 v-model="formData.username"
                 type="text"
                 class="form-control"
+                required
               />
             </div>
 
@@ -37,6 +38,9 @@
                 v-model="formData.password"
                 type="password"
                 class="form-control"
+                required
+                minlength="4"
+                maxlength="10"
               />
             </div>
           </div>
@@ -70,6 +74,7 @@
                 id="gender"
                 v-model="formData.gender"
                 class="form-select"
+                required
               >
                 <option value="" disabled>
                   Select gender
@@ -101,6 +106,9 @@
               v-model="formData.reason"
               class="form-control"
               rows="3"
+              required
+              minlength="10"
+              maxlength="150"
             ></textarea>
           </div>
 

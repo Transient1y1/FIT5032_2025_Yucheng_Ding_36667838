@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import OpportunitiesView from '../views/OpportunitiesView.vue'
+import OpportunityDetailView from '../views/OpportunityDetailView.vue'
 import PlaceholderView from '../views/PlaceholderView.vue'
 
 const router = createRouter({
@@ -13,22 +15,12 @@ const router = createRouter({
     {
       path: '/opportunities',
       name: 'opportunities',
-      component: PlaceholderView,
-      meta: {
-        eyebrow: 'Opportunities',
-        title: 'Opportunity directory',
-        description: 'A focused place for student-friendly community roles will live here.',
-      },
+      component: OpportunitiesView,
     },
     {
       path: '/opportunities/:id',
       name: 'opportunity-detail',
-      component: PlaceholderView,
-      meta: {
-        eyebrow: 'Opportunity',
-        title: 'Opportunity details',
-        description: 'Practical role information will be presented here before an expression of interest.',
-      },
+      component: OpportunityDetailView,
     },
     {
       path: '/how-it-works',

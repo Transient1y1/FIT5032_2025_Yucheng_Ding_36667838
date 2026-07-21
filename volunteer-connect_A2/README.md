@@ -2,17 +2,21 @@
 
 VolunteerConnect is a responsive Vue 3 web application concept for helping university students find practical local volunteering opportunities and helping community organisations coordinate applicants.
 
-## Day 1 scope
+## Current scope
 
-This first milestone establishes the application shell only:
+The first two milestones provide:
 
 - Vue 3 with Vite
 - Bootstrap 5 responsive layout
 - Vue Router route structure
 - Responsive navigation and footer
 - Public home page and placeholder account/role routes
+- Six dynamic opportunity records seeded into Local Storage
+- Keyword search and filters for cause, location, mode, commitment and experience
+- Responsive opportunity result cards and complete detail pages
+- Empty search results and invalid opportunity states
 
-Opportunity data, Local Storage, authentication, applications, coordinator review, ratings and security validation are intentionally scheduled for later commits.
+Authentication, applications, coordinator review, ratings and security validation are intentionally scheduled for later commits.
 
 ## Setup
 
@@ -30,6 +34,19 @@ npm run build
 npm run preview
 ```
 
-## Planned business requirement coverage
+## Business requirement progress
 
-The later milestones will map the application to BR A.1-A.2, BR B.1-B.2 and BR C.1-C.4. This Day 1 commit demonstrates the Vue 3 stack and the responsive shell only.
+| Requirement | Progress |
+|---|---|
+| BR A.1 – VueJS 3 | Implemented |
+| BR A.2 – Responsive design | Implemented |
+| BR B.1 – Input validation | Next stage |
+| BR B.2 – Dynamic data | Implemented |
+| BR C.1 – Authentication | Next stage |
+| BR C.2 – Role-based authentication | Next stage |
+| BR C.3 – Aggregated rating | Next stage |
+| BR C.4 – Basic security | Next stage |
+
+## Image credits
+
+Opportunity photographs are sourced from [Unsplash](https://unsplash.com/) and stored locally for reliable classroom demonstrations.

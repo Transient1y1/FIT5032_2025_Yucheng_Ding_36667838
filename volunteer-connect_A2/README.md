@@ -4,19 +4,22 @@ VolunteerConnect is a responsive Vue 3 web application concept for helping unive
 
 ## Current scope
 
-The first two milestones provide:
+The first three milestones provide:
 
 - Vue 3 with Vite
 - Bootstrap 5 responsive layout
 - Vue Router route structure
 - Responsive navigation and footer
-- Public home page and placeholder account/role routes
+- Public home page and supporting information routes
 - Six dynamic opportunity records seeded into Local Storage
 - Keyword search and filters for cause, location, mode, commitment and experience
 - Responsive opportunity result cards and complete detail pages
 - Empty search results and invalid opportunity states
+- Volunteer registration and login with session restoration
+- A pre-seeded coordinator account
+- Role-protected volunteer and coordinator dashboard routes
 
-Authentication, applications, coordinator review, ratings and security validation are intentionally scheduled for later commits.
+Applications, coordinator review, ratings and final security validation are intentionally scheduled for later commits.
 
 ## Setup
 
@@ -42,10 +45,18 @@ npm run preview
 | BR A.2 – Responsive design | Implemented |
 | BR B.1 – Input validation | Next stage |
 | BR B.2 – Dynamic data | Implemented |
-| BR C.1 – Authentication | Next stage |
-| BR C.2 – Role-based authentication | Next stage |
+| BR C.1 – Authentication | Implemented |
+| BR C.2 – Role-based authentication | Implemented |
 | BR C.3 – Aggregated rating | Next stage |
 | BR C.4 – Basic security | Next stage |
+
+## Demo accounts
+
+Coordinator: `coordinator@volunteerconnect.test` / `Coord123!`
+
+New registrations create volunteer accounts. Coordinator access is not available through the public registration form.
+
+Authentication is implemented in the browser for this coursework prototype. It uses Local Storage for user records and Session Storage for the active user ID.
 
 ## Image credits
 

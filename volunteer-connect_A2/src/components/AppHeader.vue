@@ -1,10 +1,21 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { currentUser, getDashboardPath, logout } from '../services/authService'
 
 const menuOpen = ref(false)
+const router = useRouter()
+const dashboardPath = computed(() => getDashboardPath())
+const accountRole = computed(() => currentUser.value?.role === 'coordinator' ? 'Coordinator' : 'Volunteer')
 
 function closeMenu() {
   menuOpen.value = false
+}
+
+function signOut() {
+  logout()
+  closeMenu()
+  router.push('/')
 }
 </script>
 
@@ -41,10 +52,17 @@ function closeMenu() {
             <li class="nav-item">
               <RouterLink class="nav-link" active-class="active" to="/for-organisations" @click="closeMenu">For organisations</RouterLink>
             </li>
-            <li class="nav-item ms-lg-2">
-              <RouterLink class="btn btn-outline-primary btn-sm px-3" to="/login" @click="closeMenu">
+            <li class="nav-item account-nav ms-lg-2">
+              <RouterLink v-if="!currentUser" class="btn btn-outline-primary btn-sm px-3" to="/login" @click="closeMenu">
                 Sign in
               </RouterLink>
+              <template v-else>
+                <RouterLink class="nav-link account-link" :to="dashboardPath" @click="closeMenu">
+                  {{ currentUser.name }}
+                  <span class="account-role">{{ accountRole }}</span>
+                </RouterLink>
+                <button class="nav-link account-action" type="button" @click="signOut">Sign out</button>
+              </template>
             </li>
           </ul>
         </div>

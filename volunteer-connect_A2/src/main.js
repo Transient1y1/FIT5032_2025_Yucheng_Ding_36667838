@@ -4,5 +4,11 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import './assets/main.css'
 import App from './App.vue'
 import router from './router'
+import { initialiseAuth } from './services/authService'
 
-createApp(App).use(router).mount('#app')
+async function startApp() {
+  await initialiseAuth()
+  createApp(App).use(router).mount('#app')
+}
+
+startApp()

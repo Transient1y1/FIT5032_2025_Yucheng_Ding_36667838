@@ -1,8 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import LoginView from '../views/LoginView.vue'
 import OpportunitiesView from '../views/OpportunitiesView.vue'
 import OpportunityDetailView from '../views/OpportunityDetailView.vue'
 import PlaceholderView from '../views/PlaceholderView.vue'
+import RegisterView from '../views/RegisterView.vue'
+import UnauthorizedView from '../views/UnauthorizedView.vue'
+import VolunteerDashboardView from '../views/VolunteerDashboardView.vue'
+import CoordinatorDashboardView from '../views/CoordinatorDashboardView.vue'
+import { getCurrentUser, getDashboardPath } from '../services/authService'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,52 +51,31 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: PlaceholderView,
-      meta: {
-        eyebrow: 'Account access',
-        title: 'Welcome back',
-        description: 'Account sign-in will be added in the authentication milestone.',
-      },
+      component: LoginView,
+      meta: { guestOnly: true },
     },
     {
       path: '/register',
       name: 'register',
-      component: PlaceholderView,
-      meta: {
-        eyebrow: 'Account access',
-        title: 'Create a volunteer account',
-        description: 'Registration will be added alongside role-based access controls.',
-      },
+      component: RegisterView,
+      meta: { guestOnly: true },
     },
     {
       path: '/volunteer/dashboard',
       name: 'volunteer-dashboard',
-      component: PlaceholderView,
-      meta: {
-        eyebrow: 'Volunteer account',
-        title: 'Your volunteering dashboard',
-        description: 'Saved roles and application updates will be gathered here.',
-      },
+      component: VolunteerDashboardView,
+      meta: { requiresAuth: true, role: 'volunteer' },
     },
     {
       path: '/coordinator/dashboard',
       name: 'coordinator-dashboard',
-      component: PlaceholderView,
-      meta: {
-        eyebrow: 'Coordinator account',
-        title: 'Coordinator workspace',
-        description: 'Organisations will be able to review applicants and manage role outcomes here.',
-      },
+      component: CoordinatorDashboardView,
+      meta: { requiresAuth: true, role: 'coordinator' },
     },
     {
       path: '/unauthorized',
       name: 'unauthorized',
-      component: PlaceholderView,
-      meta: {
-        eyebrow: 'Access',
-        title: 'This page is not available for this account',
-        description: 'Return to the public opportunity area to continue exploring VolunteerConnect.',
-      },
+      component: UnauthorizedView,
     },
     {
       path: '/:pathMatch(.*)*',
@@ -106,6 +91,24 @@ const router = createRouter({
   scrollBehavior() {
     return { top: 0 }
   },
+})
+
+router.beforeEach((to) => {
+  const user = getCurrentUser()
+
+  if (to.meta.guestOnly && user) {
+    return getDashboardPath(user)
+  }
+
+  if (to.meta.requiresAuth && !user) {
+    return { name: 'login', query: { redirect: to.fullPath } }
+  }
+
+  if (to.meta.role && user?.role !== to.meta.role) {
+    return { name: 'unauthorized' }
+  }
+
+  return true
 })
 
 export default router

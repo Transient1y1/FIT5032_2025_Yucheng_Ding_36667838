@@ -1,10 +1,71 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { currentUser } from '../services/authService'
+import {
+  createApplication,
+  getApplicationForOpportunity,
+  isOpportunitySaved,
+  toggleSavedOpportunity,
+} from '../services/applicationService'
 import { getOpportunityById } from '../services/opportunityStorage'
 
 const route = useRoute()
 const opportunity = computed(() => getOpportunityById(route.params.id))
+const isVolunteer = computed(() => currentUser.value?.role === 'volunteer')
+const isSaved = ref(false)
+const application = ref(null)
+const submitError = ref('')
+const errors = reactive({})
+const form = reactive({
+  availability: '',
+  skillsNotes: '',
+  motivation: '',
+  consent: false,
+})
+
+watch([opportunity, currentUser], () => {
+  const userId = currentUser.value?.id
+  const opportunityId = opportunity.value?.id
+  isSaved.value = Boolean(userId && opportunityId && isOpportunitySaved(userId, opportunityId))
+  application.value = userId && opportunityId
+    ? getApplicationForOpportunity(userId, opportunityId)
+    : null
+}, { immediate: true })
+
+function changeSavedStatus() {
+  if (!isVolunteer.value || !opportunity.value) return
+  isSaved.value = toggleSavedOpportunity(currentUser.value.id, opportunity.value.id)
+}
+
+function validateForm() {
+  Object.keys(errors).forEach((key) => delete errors[key])
+
+  const availability = form.availability.trim()
+  const motivation = form.motivation.trim()
+
+  if (availability.length < 3) errors.availability = 'Tell the coordinator when you are available.'
+  if (availability.length > 200) errors.availability = 'Keep availability under 200 characters.'
+  if (form.skillsNotes.trim().length > 500) errors.skillsNotes = 'Keep skills and notes under 500 characters.'
+  if (motivation.length < 20) errors.motivation = 'Write at least 20 characters about why this role interests you.'
+  if (motivation.length > 600) errors.motivation = 'Keep your answer under 600 characters.'
+  if (!form.consent) errors.consent = 'Confirm that the information is accurate before submitting.'
+
+  return Object.keys(errors).length === 0
+}
+
+function submitApplication() {
+  submitError.value = ''
+  if (!isVolunteer.value || !opportunity.value || !validateForm()) return
+
+  const result = createApplication(currentUser.value.id, opportunity.value.id, form)
+  if (!result.ok) {
+    submitError.value = result.message
+    return
+  }
+
+  application.value = result.application
+}
 </script>
 
 <template>
@@ -69,6 +130,84 @@ const opportunity = computed(() => getOpportunityById(route.params.id))
             <h2 id="impact-heading" class="h3 mb-3">Why this role matters</h2>
             <p class="mb-0">{{ opportunity.impact }}</p>
           </section>
+
+          <section id="expression-of-interest" class="application-section mt-4 p-4 p-lg-5" aria-labelledby="application-heading">
+            <p class="eyebrow mb-2">Expression of interest</p>
+            <h2 id="application-heading" class="h3 mb-3">Apply for this role</h2>
+
+            <div v-if="application" class="application-confirmation" role="status">
+              <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                <p class="h5 mb-0">Application received</p>
+                <span class="application-status status-pending">Pending</span>
+              </div>
+              <p class="text-secondary mb-3">The coordinator can now review your availability and interest in the role.</p>
+              <RouterLink class="btn btn-outline-primary" to="/volunteer/dashboard">View your applications</RouterLink>
+            </div>
+
+            <form v-else-if="isVolunteer" novalidate @submit.prevent="submitApplication">
+              <p class="text-secondary mb-4">Share enough detail for the coordinator to understand when and how you can help.</p>
+              <div v-if="submitError" class="form-alert mb-4" role="alert">{{ submitError }}</div>
+
+              <div class="mb-3">
+                <label class="form-label" for="application-availability">Your availability</label>
+                <input
+                  id="application-availability"
+                  v-model="form.availability"
+                  class="form-control"
+                  type="text"
+                  maxlength="200"
+                  placeholder="For example: Saturdays from 9 am to 2 pm"
+                  :aria-invalid="Boolean(errors.availability)"
+                  required
+                />
+                <p v-if="errors.availability" class="field-error">{{ errors.availability }}</p>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" for="application-skills">Skills or notes <span class="fw-normal text-secondary">(optional)</span></label>
+                <textarea
+                  id="application-skills"
+                  v-model="form.skillsNotes"
+                  class="form-control"
+                  rows="3"
+                  maxlength="500"
+                  placeholder="Mention useful experience, access needs or questions"
+                  :aria-invalid="Boolean(errors.skillsNotes)"
+                ></textarea>
+                <p v-if="errors.skillsNotes" class="field-error">{{ errors.skillsNotes }}</p>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" for="application-motivation">Why are you interested?</label>
+                <textarea
+                  id="application-motivation"
+                  v-model="form.motivation"
+                  class="form-control"
+                  rows="4"
+                  maxlength="600"
+                  placeholder="Briefly explain what interests you about this role"
+                  :aria-invalid="Boolean(errors.motivation)"
+                  required
+                ></textarea>
+                <p v-if="errors.motivation" class="field-error">{{ errors.motivation }}</p>
+              </div>
+
+              <div class="form-check mb-4">
+                <input id="application-consent" v-model="form.consent" class="form-check-input" type="checkbox" />
+                <label class="form-check-label" for="application-consent">I confirm that these details are accurate and may be shared with the role coordinator.</label>
+                <p v-if="errors.consent" class="field-error">{{ errors.consent }}</p>
+              </div>
+
+              <button class="btn btn-primary" type="submit">Submit expression of interest</button>
+            </form>
+
+            <div v-else-if="!currentUser" class="application-sign-in">
+              <p class="text-secondary mb-3">Sign in with a volunteer account to send an expression of interest.</p>
+              <RouterLink class="btn btn-primary" :to="{ name: 'login', query: { redirect: route.fullPath } }">Sign in to apply</RouterLink>
+            </div>
+
+            <p v-else class="text-secondary mb-0">Coordinator accounts can review applications from the coordinator dashboard, but cannot apply for roles.</p>
+          </section>
         </div>
 
         <aside class="col-lg-4" aria-label="Opportunity facts">
@@ -99,6 +238,26 @@ const opportunity = computed(() => getOpportunityById(route.params.id))
                 <dd>{{ opportunity.experience }}</dd>
               </div>
             </dl>
+          </div>
+
+          <div class="detail-action-panel p-4 mt-3">
+            <template v-if="isVolunteer">
+              <p class="h5 mb-2">Keep track of this role</p>
+              <p class="small text-secondary mb-3">Saved opportunities appear on your volunteer dashboard.</p>
+              <button class="btn w-100" :class="isSaved ? 'btn-light' : 'btn-outline-primary'" type="button" @click="changeSavedStatus">
+                {{ isSaved ? 'Remove from saved roles' : 'Save opportunity' }}
+              </button>
+              <a v-if="!application" class="btn btn-primary w-100 mt-2" href="#expression-of-interest">Apply now</a>
+            </template>
+            <template v-else-if="!currentUser">
+              <p class="h5 mb-2">Interested in this role?</p>
+              <p class="small text-secondary mb-3">Sign in to save the opportunity or submit an application.</p>
+              <RouterLink class="btn btn-outline-primary w-100" :to="{ name: 'login', query: { redirect: route.fullPath } }">Sign in</RouterLink>
+            </template>
+            <template v-else>
+              <p class="h5 mb-2">Coordinator view</p>
+              <p class="small text-secondary mb-0">Use your dashboard to manage applications.</p>
+            </template>
           </div>
         </aside>
       </div>

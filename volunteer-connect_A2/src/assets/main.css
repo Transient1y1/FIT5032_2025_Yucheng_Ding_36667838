@@ -519,6 +519,104 @@ h3,
   font-size: 0.95rem;
 }
 
+.detail-action-panel {
+  border: 1px solid var(--vc-line);
+  border-left: 4px solid var(--vc-saffron);
+  background: #fbfcfb;
+}
+
+.application-section {
+  border: 1px solid var(--vc-line);
+  border-top: 5px solid var(--vc-coral);
+  background: #ffffff;
+}
+
+.application-confirmation {
+  padding: 1.25rem;
+  border-left: 4px solid var(--vc-green);
+  background: var(--vc-mist);
+}
+
+.application-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.status-pending,
+.status-waitlisted {
+  color: #6b4910;
+  border-color: #e8cb8e;
+  background: #fff8e9;
+}
+
+.status-accepted {
+  color: var(--vc-green-dark);
+  border-color: #b8cec5;
+  background: #edf5f1;
+}
+
+.status-declined {
+  color: #7a3329;
+  border-color: #e6b9b0;
+  background: #fff1ed;
+}
+
+.status-more-information {
+  color: #364f68;
+  border-color: #b9cbd9;
+  background: #f0f6fa;
+}
+
+.dashboard-list-section {
+  border-top: 3px solid var(--vc-green);
+  border-bottom: 1px solid var(--vc-line);
+}
+
+.dashboard-section-heading,
+.dashboard-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.dashboard-section-heading {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--vc-line);
+}
+
+.dashboard-count {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  color: var(--vc-green-dark);
+  border: 1px solid #b8cec5;
+  border-radius: 50%;
+  background: #edf5f1;
+  font-weight: 800;
+}
+
+.dashboard-list-item {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--vc-line);
+}
+
+.dashboard-list-item:last-child {
+  border-bottom: 0;
+}
+
+.dashboard-empty {
+  padding: 1.5rem 0;
+}
+
 @media (max-width: 991.98px) {
   .navbar-collapse {
     padding: 0.75rem 0 0.25rem;
@@ -550,6 +648,10 @@ h3,
 
   .detail-facts-panel {
     position: static;
+  }
+
+  .detail-action-panel {
+    margin-bottom: 1rem;
   }
 }
 
@@ -586,6 +688,15 @@ h3,
 
   .dashboard-action {
     align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .dashboard-section-heading,
+  .dashboard-list-item {
+    align-items: flex-start;
+  }
+
+  .dashboard-list-item {
     flex-direction: column;
   }
 

@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import registerImage from '../assets/opportunities/food-relief.jpg'
 import { getDashboardPath, registerVolunteer } from '../services/authService'
 import { isStrongPassword, isValidEmail, isValidName } from '../utils/inputValidation'
 
@@ -46,10 +47,19 @@ async function submitRegistration() {
   <section class="account-page container-xxl py-5 py-lg-6">
     <div class="row align-items-stretch g-4 g-xl-5">
       <div class="col-lg-5">
-        <div class="account-intro h-100 p-4 p-lg-5">
-          <p class="eyebrow mb-3">Volunteer account</p>
-          <h1 class="display-6 fw-bold mb-3">Start with one role that feels right.</h1>
-          <p class="lead text-secondary mb-0">Create a volunteer account to keep your opportunity choices and updates together.</p>
+        <div class="account-intro account-intro-photo account-intro-register h-100">
+          <img class="account-intro-photo-image" :src="registerImage" alt="" />
+          <div class="account-intro-photo-shade" aria-hidden="true"></div>
+          <div class="account-intro-photo-content p-4 p-lg-5">
+            <p class="account-intro-photo-label mb-0">
+              <span class="account-intro-photo-marker" aria-hidden="true"></span>
+              Volunteer account
+            </p>
+            <div>
+              <h1 class="account-intro-photo-title mb-3">Start with one role that feels right.</h1>
+              <p class="account-intro-photo-copy mb-0">Create a volunteer account to keep your opportunity choices and updates together.</p>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -1,59 +1,101 @@
+<script setup>
+import heroImage from '../assets/opportunities/companion-visitor.jpg'
+import { getOpportunities } from '../services/opportunityStorage'
+
+const opportunities = getOpportunities()
+const featuredOpportunities = opportunities.slice(0, 3)
+const primaryOpportunity = featuredOpportunities[0]
+const supportingOpportunities = featuredOpportunities.slice(1)
+const causeCount = new Set(opportunities.map((opportunity) => opportunity.cause)).size
+</script>
+
 <template>
   <div class="home-view">
-    <section class="home-intro border-bottom">
-      <div class="container-xxl py-5 py-lg-6">
-        <div class="row align-items-end g-4">
-          <div class="col-lg-8">
-            <p class="eyebrow mb-3">Student volunteering, made practical</p>
-            <h1 class="display-4 fw-bold mb-3">Find a role that fits your week.</h1>
-            <p class="lead text-secondary mb-4 intro-copy">
-              Explore local opportunities with the time, location and support details you need before you apply.
-            </p>
-            <div class="d-flex flex-wrap gap-2">
-              <RouterLink class="btn btn-primary btn-lg" to="/opportunities">
-                Browse opportunities
-              </RouterLink>
-              <RouterLink class="btn btn-light btn-lg" to="/how-it-works">See how it works</RouterLink>
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="intro-signal p-4" aria-label="VolunteerConnect focus">
-              <p class="small text-uppercase fw-semibold mb-2">VolunteerConnect focus</p>
-              <p class="h5 mb-2">Clear roles. Confident applications. Stronger local connections.</p>
-              <p class="mb-0 text-secondary">Designed around the practical questions students ask before committing.</p>
-              <div class="focus-list d-flex flex-wrap gap-2 mt-4" aria-hidden="true">
-                <span>Time</span>
-                <span>Place</span>
-                <span>Support</span>
-              </div>
-            </div>
-          </div>
+    <section class="home-hero" aria-labelledby="home-heading">
+      <img
+        class="home-hero-image"
+        :src="heroImage"
+        alt="A group of volunteers sitting together with their arms around each other"
+      />
+      <div class="home-hero-shade" aria-hidden="true"></div>
+
+      <div class="container-xxl home-hero-content">
+        <p class="home-hero-kicker mb-3">
+          <span class="home-hero-marker" aria-hidden="true"></span>
+          Student volunteering across Melbourne
+        </p>
+        <h1 id="home-heading" class="home-hero-title mb-4">Local volunteering that works with student life.</h1>
+        <p class="home-hero-copy mb-4">
+          See the time, place and support before you commit. Choose a role that fits around classes, work and everything else.
+        </p>
+        <div class="home-hero-actions d-flex flex-wrap gap-2">
+          <RouterLink class="btn btn-warning btn-lg" to="/opportunities">See open roles</RouterLink>
+          <RouterLink class="btn btn-outline-light btn-lg" to="/how-it-works">How it works</RouterLink>
         </div>
+
+        <dl class="home-hero-facts mb-0">
+          <div>
+            <dt>Open now</dt>
+            <dd>{{ opportunities.length }} roles</dd>
+          </div>
+          <div>
+            <dt>Community focus</dt>
+            <dd>{{ causeCount }} causes</dd>
+          </div>
+          <div>
+            <dt>Ways to join</dt>
+            <dd>On-site and online</dd>
+          </div>
+        </dl>
       </div>
     </section>
 
-    <section class="container-xxl py-5" aria-labelledby="audience-heading">
-      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+    <section class="home-featured container-xxl py-5" aria-labelledby="featured-heading">
+      <header class="home-section-heading mb-4 mb-lg-5">
         <div>
-          <p class="eyebrow mb-2">One shared community space</p>
-          <h2 id="audience-heading" class="h3 mb-0">Useful from the first search to the final update.</h2>
+          <p class="eyebrow mb-2">Open this week</p>
+          <h2 id="featured-heading" class="home-section-title mb-0">Three places to start.</h2>
         </div>
-        <span class="section-rule" aria-hidden="true"></span>
-      </div>
+        <RouterLink class="home-text-link" to="/opportunities">View all {{ opportunities.length }} roles</RouterLink>
+      </header>
 
-      <div class="row g-4">
-        <article class="col-md-6">
-          <div class="audience-panel h-100 p-4">
-            <span class="panel-index" aria-hidden="true">01</span>
-            <h3 class="h5 mt-3">For students</h3>
-            <p class="text-secondary mb-0">Find beginner-friendly roles, understand what to expect and keep your applications in one place.</p>
+      <div v-if="primaryOpportunity" class="home-featured-grid">
+        <article class="home-feature-card home-feature-card-main">
+          <img
+            class="home-feature-image"
+            :src="primaryOpportunity.image"
+            :alt="primaryOpportunity.imageAlt"
+          />
+          <div class="home-feature-copy">
+            <p class="home-feature-cause mb-2">{{ primaryOpportunity.cause }}</p>
+            <h3 class="home-feature-title mb-2">{{ primaryOpportunity.title }}</h3>
+            <p class="home-feature-organisation mb-3">{{ primaryOpportunity.organisation }}</p>
+            <p class="text-secondary mb-4">{{ primaryOpportunity.summary }}</p>
+            <dl class="home-feature-meta mb-4">
+              <div>
+                <dt>Where</dt>
+                <dd>{{ primaryOpportunity.location }}</dd>
+              </div>
+              <div>
+                <dt>When</dt>
+                <dd>{{ primaryOpportunity.schedule }}</dd>
+              </div>
+            </dl>
+            <RouterLink class="btn btn-primary" :to="`/opportunities/${primaryOpportunity.id}`">View this role</RouterLink>
           </div>
         </article>
-        <article class="col-md-6">
-          <div class="audience-panel h-100 p-4">
-            <span class="panel-index" aria-hidden="true">02</span>
-            <h3 class="h5 mt-3">For organisations</h3>
-            <p class="text-secondary mb-0">Share structured opportunities and spend less time repeating practical details to applicants.</p>
+
+        <article
+          v-for="opportunity in supportingOpportunities"
+          :key="opportunity.id"
+          class="home-feature-card home-feature-card-side"
+        >
+          <img class="home-feature-image" :src="opportunity.image" :alt="opportunity.imageAlt" />
+          <div class="home-feature-copy">
+            <p class="home-feature-cause mb-2">{{ opportunity.cause }}</p>
+            <h3 class="h4 mb-2">{{ opportunity.title }}</h3>
+            <p class="small text-secondary mb-3">{{ opportunity.location }} · {{ opportunity.schedule }}</p>
+            <RouterLink class="home-text-link" :to="`/opportunities/${opportunity.id}`">View role</RouterLink>
           </div>
         </article>
       </div>

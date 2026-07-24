@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import loginImage from '../assets/opportunities/digital-tutor.jpg'
 import { getDashboardPath, login } from '../services/authService'
 import { isValidEmail } from '../utils/inputValidation'
 
@@ -40,10 +41,19 @@ async function submitLogin() {
   <section class="account-page container-xxl py-5 py-lg-6">
     <div class="row align-items-stretch g-4 g-xl-5">
       <div class="col-lg-5">
-        <div class="account-intro h-100 p-4 p-lg-5">
-          <p class="eyebrow mb-3">Account access</p>
-          <h1 class="display-6 fw-bold mb-3">Keep your volunteering plans close.</h1>
-          <p class="lead text-secondary mb-0">Sign in to manage your place in the VolunteerConnect community.</p>
+        <div class="account-intro account-intro-photo account-intro-login h-100">
+          <img class="account-intro-photo-image" :src="loginImage" alt="" />
+          <div class="account-intro-photo-shade" aria-hidden="true"></div>
+          <div class="account-intro-photo-content p-4 p-lg-5">
+            <p class="account-intro-photo-label mb-0">
+              <span class="account-intro-photo-marker" aria-hidden="true"></span>
+              Account access
+            </p>
+            <div>
+              <h1 class="account-intro-photo-title mb-3">Keep your volunteering plans close.</h1>
+              <p class="account-intro-photo-copy mb-0">Sign in to manage your place in the VolunteerConnect community.</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -77,11 +87,6 @@ async function submitLogin() {
             New to VolunteerConnect?
             <RouterLink class="fw-semibold" to="/register">Create a volunteer account</RouterLink>
           </p>
-
-          <div class="demo-note mt-4 p-3">
-            <p class="small fw-semibold mb-1">Coordinator demo account</p>
-            <p class="small text-secondary mb-0">coordinator@volunteerconnect.test / Coord123!</p>
-          </div>
         </form>
       </div>
     </div>

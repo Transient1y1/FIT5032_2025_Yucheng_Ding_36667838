@@ -72,6 +72,7 @@ function clearFilters() {
               v-model="filters.keyword"
               class="form-control form-control-lg"
               type="search"
+              maxlength="80"
               placeholder="Role, cause, organisation or place"
             />
           </div>

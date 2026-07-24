@@ -4,7 +4,7 @@ VolunteerConnect is a responsive Vue 3 web application concept for helping unive
 
 ## Current scope
 
-The first five milestones and the rating feature provide:
+The completed development milestones provide:
 
 - Vue 3 with Vite
 - Bootstrap 5 responsive layout
@@ -29,8 +29,11 @@ The first five milestones and the rating feature provide:
 - A 1-5 star rating for the clarity and usefulness of each role
 - An aggregate average score and rating count for every opportunity
 - One editable rating per volunteer for each opportunity
+- Shared client and service validation for user-entered text
+- Same-origin Content Security Policy and allowlisted status and rating values
+- Vue text interpolation without raw HTML rendering
 
-Final security validation is intentionally scheduled for the next stage.
+The current prototype now covers Business Requirements A-C.
 
 ## Setup
 
@@ -59,7 +62,7 @@ npm run preview
 | BR C.1 – Authentication | Implemented |
 | BR C.2 – Role-based authentication | Implemented |
 | BR C.3 – Aggregated rating | Implemented |
-| BR C.4 – Basic security | Next stage |
+| BR C.4 – Basic security | Implemented |
 
 ## Demo accounts
 
@@ -70,6 +73,16 @@ New registrations create volunteer accounts. Coordinator access is not available
 Authentication is implemented in the browser for this coursework prototype. It uses Local Storage for user records and Session Storage for the active user ID.
 
 Application review controls are restricted to the coordinator account. Volunteer accounts are redirected away from the coordinator route and cannot call the status update service successfully.
+
+## Security approach
+
+- User-entered content is rendered with Vue text interpolation. The application does not use `v-html` or direct HTML injection.
+- Names, emails, passwords, EOI fields, identifiers, ratings and application statuses are checked at the client and service boundaries.
+- Text fields reject HTML brackets and control characters and apply explicit length limits.
+- The Content Security Policy limits scripts, images, forms and connections to approved sources.
+- Passwords use a unique salt and SHA-256 digest instead of plain-text storage.
+
+This remains a browser-only coursework prototype. Local Storage can be inspected or changed by a person with access to the browser and should not be treated as a production database for confidential data.
 
 ## Image credits
 

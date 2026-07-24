@@ -2,6 +2,7 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getDashboardPath, registerVolunteer } from '../services/authService'
+import { isStrongPassword, isValidEmail, isValidName } from '../utils/inputValidation'
 
 const router = useRouter()
 const form = reactive({ name: '', email: '', password: '', confirmPassword: '', terms: false })
@@ -13,10 +14,10 @@ const isSubmitting = ref(false)
 function validateForm() {
   Object.keys(errors).forEach((key) => delete errors[key])
 
-  if (form.name.trim().length < 2) errors.name = 'Enter your full name.'
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) errors.email = 'Enter a valid email address.'
-  if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}/.test(form.password)) {
-    errors.password = 'Use at least 8 characters with upper, lower and number characters.'
+  if (!isValidName(form.name)) errors.name = 'Use 2 to 60 letters, spaces, apostrophes or hyphens.'
+  if (!isValidEmail(form.email)) errors.email = 'Enter a valid email address.'
+  if (!isStrongPassword(form.password)) {
+    errors.password = 'Use 8 to 128 characters with upper, lower and number characters.'
   }
   if (form.confirmPassword !== form.password) errors.confirmPassword = 'Passwords do not match.'
   if (!form.terms) errors.terms = 'Please accept the role information before registering.'
@@ -61,25 +62,25 @@ async function submitRegistration() {
 
           <div class="mb-3">
             <label class="form-label" for="register-name">Full name</label>
-            <input id="register-name" v-model="form.name" class="form-control form-control-lg" type="text" autocomplete="name" required />
+            <input id="register-name" v-model="form.name" class="form-control form-control-lg" type="text" autocomplete="name" maxlength="60" required />
             <p v-if="errors.name" class="field-error">{{ errors.name }}</p>
           </div>
 
           <div class="mb-3">
             <label class="form-label" for="register-email">Email address</label>
-            <input id="register-email" v-model="form.email" class="form-control form-control-lg" type="email" autocomplete="email" required />
+            <input id="register-email" v-model="form.email" class="form-control form-control-lg" type="email" autocomplete="email" maxlength="120" required />
             <p v-if="errors.email" class="field-error">{{ errors.email }}</p>
           </div>
 
           <div class="mb-3">
             <label class="form-label" for="register-password">Password</label>
-            <input id="register-password" v-model="form.password" class="form-control form-control-lg" :type="showPassword ? 'text' : 'password'" autocomplete="new-password" required />
+            <input id="register-password" v-model="form.password" class="form-control form-control-lg" :type="showPassword ? 'text' : 'password'" autocomplete="new-password" maxlength="128" required />
             <p v-if="errors.password" class="field-error">{{ errors.password }}</p>
           </div>
 
           <div class="mb-3">
             <label class="form-label" for="register-confirm-password">Confirm password</label>
-            <input id="register-confirm-password" v-model="form.confirmPassword" class="form-control form-control-lg" :type="showPassword ? 'text' : 'password'" autocomplete="new-password" required />
+            <input id="register-confirm-password" v-model="form.confirmPassword" class="form-control form-control-lg" :type="showPassword ? 'text' : 'password'" autocomplete="new-password" maxlength="128" required />
             <p v-if="errors.confirmPassword" class="field-error">{{ errors.confirmPassword }}</p>
           </div>
 

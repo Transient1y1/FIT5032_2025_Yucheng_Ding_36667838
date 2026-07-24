@@ -2,6 +2,7 @@
 import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getDashboardPath, login } from '../services/authService'
+import { isValidEmail } from '../utils/inputValidation'
 
 const router = useRouter()
 const route = useRoute()
@@ -17,8 +18,8 @@ function safeRedirect() {
 
 async function submitLogin() {
   errorMessage.value = ''
-  if (!form.email.trim() || !form.password) {
-    errorMessage.value = 'Enter your email and password.'
+  if (!isValidEmail(form.email) || !form.password || form.password.length > 128) {
+    errorMessage.value = 'Enter a valid email and password.'
     return
   }
 
@@ -55,12 +56,12 @@ async function submitLogin() {
 
           <div class="mb-3">
             <label class="form-label" for="login-email">Email address</label>
-            <input id="login-email" v-model="form.email" class="form-control form-control-lg" type="email" autocomplete="email" required />
+            <input id="login-email" v-model="form.email" class="form-control form-control-lg" type="email" autocomplete="email" maxlength="120" required />
           </div>
 
           <div class="mb-3">
             <label class="form-label" for="login-password">Password</label>
-            <input id="login-password" v-model="form.password" class="form-control form-control-lg" :type="showPassword ? 'text' : 'password'" autocomplete="current-password" required />
+            <input id="login-password" v-model="form.password" class="form-control form-control-lg" :type="showPassword ? 'text' : 'password'" autocomplete="current-password" maxlength="128" required />
           </div>
 
           <div class="form-check mb-4">

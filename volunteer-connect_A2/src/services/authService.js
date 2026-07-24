@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { isStrongPassword, isValidEmail, isValidIdentifier, isValidName } from '../utils/inputValidation'
 
 const USERS_KEY = 'vc_users'
 const SESSION_KEY = 'vc_session'
@@ -22,11 +23,11 @@ function readUsers() {
 
     return users.filter((user) => (
       user &&
-      typeof user.id === 'string' &&
-      typeof user.name === 'string' &&
-      typeof user.email === 'string' &&
-      typeof user.passwordHash === 'string' &&
-      typeof user.passwordSalt === 'string' &&
+      isValidIdentifier(user.id) &&
+      isValidName(user.name) &&
+      isValidEmail(user.email) &&
+      /^[a-f0-9]{64}$/.test(user.passwordHash) &&
+      /^[a-f0-9]{32}$/.test(user.passwordSalt) &&
       ['volunteer', 'coordinator'].includes(user.role)
     ))
   } catch {
@@ -50,7 +51,7 @@ function publicUser(user) {
 }
 
 function normaliseEmail(email) {
-  return email.trim().toLowerCase()
+  return typeof email === 'string' ? email.trim().toLowerCase() : ''
 }
 
 function createSalt() {
@@ -107,6 +108,10 @@ export async function initialiseAuth() {
 }
 
 export async function login(email, password) {
+  if (!isValidEmail(email) || typeof password !== 'string' || password.length > 128) {
+    return { ok: false, message: 'Email or password is incorrect.' }
+  }
+
   const user = readUsers().find((item) => item.email === normaliseEmail(email))
   if (!user) return { ok: false, message: 'Email or password is incorrect.' }
 
@@ -121,6 +126,16 @@ export async function login(email, password) {
 }
 
 export async function registerVolunteer({ name, email, password }) {
+  if (!isValidName(name)) {
+    return { ok: false, message: 'Enter a valid name using 2 to 60 characters.' }
+  }
+  if (!isValidEmail(email)) {
+    return { ok: false, message: 'Enter a valid email address.' }
+  }
+  if (!isStrongPassword(password)) {
+    return { ok: false, message: 'Password does not meet the security requirements.' }
+  }
+
   const users = readUsers()
   const normalisedEmail = normaliseEmail(email)
 

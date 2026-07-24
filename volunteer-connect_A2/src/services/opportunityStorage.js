@@ -1,4 +1,5 @@
 import { seedOpportunities } from '../data/opportunities'
+import { isSafePlainText, isValidIdentifier } from '../utils/inputValidation'
 
 const STORAGE_KEY = 'vc_opportunities'
 const REQUIRED_TEXT_FIELDS = [
@@ -38,9 +39,15 @@ function restoreBundledImages(opportunities) {
 function isValidOpportunity(value) {
   return (
     value &&
-    REQUIRED_TEXT_FIELDS.every((field) => typeof value[field] === 'string' && value[field].trim()) &&
+    isValidIdentifier(value.id) &&
+    seedOpportunities.some((opportunity) => opportunity.id === value.id) &&
+    REQUIRED_TEXT_FIELDS
+      .filter((field) => field !== 'id')
+      .every((field) => isSafePlainText(value[field], 1, 2000)) &&
     Array.isArray(value.tasks) &&
-    Array.isArray(value.requirements)
+    value.tasks.every((task) => isSafePlainText(task, 1, 500)) &&
+    Array.isArray(value.requirements) &&
+    value.requirements.every((requirement) => isSafePlainText(requirement, 1, 500))
   )
 }
 

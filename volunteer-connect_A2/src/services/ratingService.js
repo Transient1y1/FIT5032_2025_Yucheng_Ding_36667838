@@ -1,4 +1,6 @@
 import { getCurrentUser } from './authService'
+import { getOpportunityById } from './opportunityStorage'
+import { isValidIdentifier } from '../utils/inputValidation'
 
 const RATINGS_KEY = 'vc_ratings'
 
@@ -12,9 +14,9 @@ function readRatings() {
 
     return ratings.filter((rating) => (
       rating &&
-      typeof rating.id === 'string' &&
-      typeof rating.userId === 'string' &&
-      typeof rating.opportunityId === 'string' &&
+      isValidIdentifier(rating.id) &&
+      isValidIdentifier(rating.userId) &&
+      isValidIdentifier(rating.opportunityId) &&
       Number.isInteger(rating.score) &&
       rating.score >= 1 &&
       rating.score <= 5 &&
@@ -31,6 +33,10 @@ function saveRatings(ratings) {
 }
 
 export function getRatingSummary(opportunityId) {
+  if (!isValidIdentifier(opportunityId) || !getOpportunityById(opportunityId)) {
+    return { average: 0, count: 0 }
+  }
+
   const ratings = readRatings().filter((rating) => rating.opportunityId === opportunityId)
   const total = ratings.reduce((sum, rating) => sum + rating.score, 0)
 
@@ -42,7 +48,7 @@ export function getRatingSummary(opportunityId) {
 
 export function getVolunteerRating(opportunityId) {
   const user = getCurrentUser()
-  if (user?.role !== 'volunteer') return null
+  if (user?.role !== 'volunteer' || !getOpportunityById(opportunityId)) return null
 
   return readRatings().find(
     (rating) => rating.userId === user.id && rating.opportunityId === opportunityId,
@@ -55,7 +61,13 @@ export function saveOpportunityRating(opportunityId, score) {
     return { ok: false, message: 'A volunteer account is required to rate this opportunity.' }
   }
 
-  if (typeof opportunityId !== 'string' || !Number.isInteger(score) || score < 1 || score > 5) {
+  if (
+    !isValidIdentifier(opportunityId) ||
+    !getOpportunityById(opportunityId) ||
+    !Number.isInteger(score) ||
+    score < 1 ||
+    score > 5
+  ) {
     return { ok: false, message: 'Choose a rating from 1 to 5 stars.' }
   }
 

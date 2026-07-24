@@ -1,4 +1,6 @@
 import { getCurrentUser } from './authService'
+import { getOpportunityById } from './opportunityStorage'
+import { isSafePlainText, isValidIdentifier } from '../utils/inputValidation'
 
 const SAVED_KEY = 'vc_saved_opportunities'
 const APPLICATIONS_KEY = 'vc_applications'
@@ -22,7 +24,7 @@ function saveList(key, items) {
 }
 
 function validId(value) {
-  return typeof value === 'string' && value.trim().length > 0
+  return isValidIdentifier(value)
 }
 
 function readSavedItems() {
@@ -37,16 +39,16 @@ function readApplications() {
     validId(application.id) &&
     validId(application.userId) &&
     validId(application.opportunityId) &&
-    typeof application.availability === 'string' &&
-    typeof application.skillsNotes === 'string' &&
-    typeof application.motivation === 'string' &&
+    isSafePlainText(application.availability, 3, 200) &&
+    isSafePlainText(application.skillsNotes, 0, 500) &&
+    isSafePlainText(application.motivation, 20, 600) &&
     typeof application.submittedAt === 'string' &&
     APPLICATION_STATUSES.includes(application.status)
   ))
 }
 
 export function getSavedOpportunityIds(userId) {
-  if (!validId(userId)) return []
+  if (!validId(userId) || getCurrentUser()?.id !== userId) return []
 
   return readSavedItems()
     .filter((item) => item.userId === userId)
@@ -58,7 +60,13 @@ export function isOpportunitySaved(userId, opportunityId) {
 }
 
 export function toggleSavedOpportunity(userId, opportunityId) {
-  if (!validId(userId) || !validId(opportunityId)) return false
+  const user = getCurrentUser()
+  if (
+    user?.role !== 'volunteer' ||
+    user.id !== userId ||
+    !validId(opportunityId) ||
+    !getOpportunityById(opportunityId)
+  ) return false
 
   const savedItems = readSavedItems()
   const itemIndex = savedItems.findIndex(
@@ -77,7 +85,7 @@ export function toggleSavedOpportunity(userId, opportunityId) {
 }
 
 export function getApplicationsForUser(userId) {
-  if (!validId(userId)) return []
+  if (!validId(userId) || getCurrentUser()?.id !== userId) return []
   return readApplications().filter((application) => application.userId === userId)
 }
 
@@ -120,7 +128,14 @@ export function updateApplicationStatus(applicationId, status) {
 }
 
 export function createApplication(userId, opportunityId, form) {
-  if (!validId(userId) || !validId(opportunityId)) {
+  const user = getCurrentUser()
+  if (
+    user?.role !== 'volunteer' ||
+    user.id !== userId ||
+    !validId(opportunityId) ||
+    !getOpportunityById(opportunityId) ||
+    !form
+  ) {
     return { ok: false, message: 'Your session or this opportunity is unavailable.' }
   }
 
@@ -133,11 +148,16 @@ export function createApplication(userId, opportunityId, form) {
     return { ok: false, message: 'You have already applied for this opportunity.' }
   }
 
-  const availability = form.availability.trim()
-  const skillsNotes = form.skillsNotes.trim()
-  const motivation = form.motivation.trim()
+  const availability = typeof form.availability === 'string' ? form.availability.trim() : ''
+  const skillsNotes = typeof form.skillsNotes === 'string' ? form.skillsNotes.trim() : ''
+  const motivation = typeof form.motivation === 'string' ? form.motivation.trim() : ''
 
-  if (!availability || availability.length > 200 || skillsNotes.length > 500 || motivation.length < 20 || motivation.length > 600 || form.consent !== true) {
+  if (
+    !isSafePlainText(availability, 3, 200) ||
+    !isSafePlainText(skillsNotes, 0, 500) ||
+    !isSafePlainText(motivation, 20, 600) ||
+    form.consent !== true
+  ) {
     return { ok: false, message: 'Check the form fields and try again.' }
   }
 

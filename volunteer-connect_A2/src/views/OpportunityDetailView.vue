@@ -10,6 +10,7 @@ import {
 } from '../services/applicationService'
 import { getOpportunityById } from '../services/opportunityStorage'
 import { getRatingSummary, getVolunteerRating, saveOpportunityRating } from '../services/ratingService'
+import { isSafePlainText } from '../utils/inputValidation'
 
 const route = useRoute()
 const opportunity = computed(() => getOpportunityById(route.params.id))
@@ -55,11 +56,15 @@ function validateForm() {
   const availability = form.availability.trim()
   const motivation = form.motivation.trim()
 
-  if (availability.length < 3) errors.availability = 'Tell the coordinator when you are available.'
-  if (availability.length > 200) errors.availability = 'Keep availability under 200 characters.'
-  if (form.skillsNotes.trim().length > 500) errors.skillsNotes = 'Keep skills and notes under 500 characters.'
-  if (motivation.length < 20) errors.motivation = 'Write at least 20 characters about why this role interests you.'
-  if (motivation.length > 600) errors.motivation = 'Keep your answer under 600 characters.'
+  if (!isSafePlainText(availability, 3, 200)) {
+    errors.availability = 'Use 3 to 200 plain-text characters without HTML brackets.'
+  }
+  if (!isSafePlainText(form.skillsNotes, 0, 500)) {
+    errors.skillsNotes = 'Use up to 500 plain-text characters without HTML brackets.'
+  }
+  if (!isSafePlainText(motivation, 20, 600)) {
+    errors.motivation = 'Use 20 to 600 plain-text characters without HTML brackets.'
+  }
   if (!form.consent) errors.consent = 'Confirm that the information is accurate before submitting.'
 
   return Object.keys(errors).length === 0

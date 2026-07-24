@@ -9,12 +9,17 @@ import {
   toggleSavedOpportunity,
 } from '../services/applicationService'
 import { getOpportunityById } from '../services/opportunityStorage'
+import { getRatingSummary, getVolunteerRating, saveOpportunityRating } from '../services/ratingService'
 
 const route = useRoute()
 const opportunity = computed(() => getOpportunityById(route.params.id))
 const isVolunteer = computed(() => currentUser.value?.role === 'volunteer')
 const isSaved = ref(false)
 const application = ref(null)
+const ratingSummary = ref({ average: 0, count: 0 })
+const savedRating = ref(null)
+const selectedRating = ref(0)
+const ratingFeedback = ref({ type: '', message: '' })
 const submitError = ref('')
 const errors = reactive({})
 const form = reactive({
@@ -31,6 +36,12 @@ watch([opportunity, currentUser], () => {
   application.value = userId && opportunityId
     ? getApplicationForOpportunity(userId, opportunityId)
     : null
+  ratingSummary.value = opportunityId
+    ? getRatingSummary(opportunityId)
+    : { average: 0, count: 0 }
+  savedRating.value = opportunityId ? getVolunteerRating(opportunityId) : null
+  selectedRating.value = savedRating.value?.score || 0
+  ratingFeedback.value = { type: '', message: '' }
 }, { immediate: true })
 
 function changeSavedStatus() {
@@ -65,6 +76,28 @@ function submitApplication() {
   }
 
   application.value = result.application
+}
+
+function chooseRating(score) {
+  selectedRating.value = score
+  ratingFeedback.value = { type: '', message: '' }
+}
+
+function submitRating() {
+  if (!opportunity.value) return
+
+  const result = saveOpportunityRating(opportunity.value.id, selectedRating.value)
+  if (!result.ok) {
+    ratingFeedback.value = { type: 'error', message: result.message }
+    return
+  }
+
+  savedRating.value = result.rating
+  ratingSummary.value = result.summary
+  ratingFeedback.value = {
+    type: 'success',
+    message: result.updated ? 'Your rating has been updated.' : 'Your rating has been saved.',
+  }
 }
 </script>
 
@@ -129,6 +162,72 @@ function submitApplication() {
             <p class="eyebrow mb-2">Community impact</p>
             <h2 id="impact-heading" class="h3 mb-3">Why this role matters</h2>
             <p class="mb-0">{{ opportunity.impact }}</p>
+          </section>
+
+          <section class="rating-section mt-4 p-4 p-lg-5" aria-labelledby="rating-heading">
+            <div class="rating-layout">
+              <div class="rating-summary">
+                <p class="eyebrow mb-2">Role information rating</p>
+                <h2 id="rating-heading" class="h3 mb-3">Is this information clear and useful?</h2>
+                <div class="d-flex align-items-end gap-2 mb-2">
+                  <span class="rating-score">{{ ratingSummary.average.toFixed(1) }}</span>
+                  <span class="rating-out-of">out of 5</span>
+                </div>
+                <div class="aggregate-stars mb-2" :aria-label="`Average rating ${ratingSummary.average.toFixed(1)} out of 5`">
+                  <span
+                    v-for="star in 5"
+                    :key="star"
+                    :class="{ active: star <= Math.round(ratingSummary.average) }"
+                    aria-hidden="true"
+                  >&#9733;</span>
+                </div>
+                <p class="small text-secondary mb-0">
+                  {{ ratingSummary.count }} rating{{ ratingSummary.count === 1 ? '' : 's' }}
+                </p>
+              </div>
+
+              <form v-if="isVolunteer" class="rating-form" @submit.prevent="submitRating">
+                <p class="h5 mb-2">{{ savedRating ? 'Update your rating' : 'Add your rating' }}</p>
+                <p class="small text-secondary mb-3">Choose the score that best reflects the clarity of this role information.</p>
+                <div class="star-picker mb-3" role="radiogroup" aria-label="Your rating">
+                  <button
+                    v-for="star in 5"
+                    :key="star"
+                    class="rating-star-button"
+                    :class="{ active: star <= selectedRating }"
+                    type="button"
+                    role="radio"
+                    :aria-checked="selectedRating === star"
+                    :aria-label="`${star} star${star === 1 ? '' : 's'}`"
+                    @click="chooseRating(star)"
+                  >
+                    <span aria-hidden="true">&#9733;</span>
+                  </button>
+                </div>
+                <button class="btn btn-primary" type="submit" :disabled="selectedRating === 0">
+                  {{ savedRating ? 'Update rating' : 'Save rating' }}
+                </button>
+                <p
+                  v-if="ratingFeedback.message"
+                  class="rating-feedback mb-0"
+                  :class="ratingFeedback.type === 'success' ? 'rating-feedback-success' : 'field-error'"
+                  role="status"
+                >
+                  {{ ratingFeedback.message }}
+                </p>
+              </form>
+
+              <div v-else-if="!currentUser" class="rating-form">
+                <p class="h5 mb-2">Share your rating</p>
+                <p class="small text-secondary mb-3">Sign in with a volunteer account to rate this role information.</p>
+                <RouterLink class="btn btn-outline-primary" :to="{ name: 'login', query: { redirect: route.fullPath } }">Sign in to rate</RouterLink>
+              </div>
+
+              <div v-else class="rating-form">
+                <p class="h5 mb-2">Volunteer ratings</p>
+                <p class="small text-secondary mb-0">Coordinator accounts can view the aggregate result but cannot submit a rating.</p>
+              </div>
+            </div>
           </section>
 
           <section id="expression-of-interest" class="application-section mt-4 p-4 p-lg-5" aria-labelledby="application-heading">

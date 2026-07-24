@@ -537,6 +537,91 @@ h3,
   background: var(--vc-mist);
 }
 
+.rating-section {
+  border: 1px solid var(--vc-line);
+  border-top: 5px solid var(--vc-saffron);
+  background: #fbfcfb;
+}
+
+.rating-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 2rem;
+}
+
+.rating-summary {
+  padding-right: 2rem;
+  border-right: 1px solid var(--vc-line);
+}
+
+.rating-score {
+  color: var(--vc-green-dark);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.rating-out-of {
+  padding-bottom: 0.25rem;
+  color: #71807d;
+  font-size: 0.82rem;
+}
+
+.aggregate-stars,
+.star-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.aggregate-stars {
+  color: #c4cfcb;
+  font-size: 1.3rem;
+}
+
+.aggregate-stars .active {
+  color: var(--vc-saffron);
+}
+
+.rating-form {
+  align-self: center;
+}
+
+.rating-star-button {
+  display: inline-grid;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  place-items: center;
+  color: #b8c5c1;
+  border: 0;
+  background: transparent;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.rating-star-button:hover,
+.rating-star-button:focus,
+.rating-star-button.active {
+  color: var(--vc-saffron);
+}
+
+.rating-star-button:focus-visible {
+  outline: 2px solid var(--vc-green);
+  outline-offset: 2px;
+}
+
+.rating-feedback {
+  margin-top: 0.75rem;
+  font-size: 0.82rem;
+}
+
+.rating-feedback-success {
+  color: var(--vc-green);
+  font-weight: 700;
+}
+
 .application-status {
   display: inline-flex;
   align-items: center;
@@ -739,6 +824,16 @@ h3,
 
   .detail-action-panel {
     margin-bottom: 1rem;
+  }
+
+  .rating-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .rating-summary {
+    padding: 0 0 1.5rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--vc-line);
   }
 
   .review-controls {

@@ -4,7 +4,7 @@ VolunteerConnect is a responsive Vue 3 web application concept for helping unive
 
 ## Current scope
 
-The first five milestones provide:
+The first five milestones and the rating feature provide:
 
 - Vue 3 with Vite
 - Bootstrap 5 responsive layout
@@ -26,8 +26,11 @@ The first five milestones provide:
 - Coordinator access to volunteer availability, skills, notes and motivation
 - Accept, waitlist, decline and request-more-information outcomes
 - Application status updates visible on the volunteer dashboard
+- A 1-5 star rating for the clarity and usefulness of each role
+- An aggregate average score and rating count for every opportunity
+- One editable rating per volunteer for each opportunity
 
-Ratings and final security validation are intentionally scheduled for the next commit.
+Final security validation is intentionally scheduled for the next stage.
 
 ## Setup
 
@@ -55,7 +58,7 @@ npm run preview
 | BR B.2 – Dynamic data | Implemented |
 | BR C.1 – Authentication | Implemented |
 | BR C.2 – Role-based authentication | Implemented |
-| BR C.3 – Aggregated rating | Next stage |
+| BR C.3 – Aggregated rating | Implemented |
 | BR C.4 – Basic security | Next stage |
 
 ## Demo accounts

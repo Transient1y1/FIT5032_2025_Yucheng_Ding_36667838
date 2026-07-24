@@ -77,7 +77,7 @@ loadDashboard()
         <div class="dashboard-stat dashboard-stat-accent h-100 p-4">
           <p class="stat-label mb-2">Account type</p>
           <p class="stat-value stat-value-word mb-2">Volunteer</p>
-          <p class="small text-secondary mb-0">Your account can browse student-friendly roles.</p>
+          <p class="small text-secondary mb-0">Browse roles supporting older adults across Melbourne.</p>
         </div>
       </div>
     </div>

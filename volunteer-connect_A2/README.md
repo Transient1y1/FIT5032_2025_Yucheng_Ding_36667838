@@ -1,6 +1,6 @@
 # VolunteerConnect
 
-VolunteerConnect is a responsive Vue 3 web application concept for helping university students find practical local volunteering opportunities and helping community organisations coordinate applicants.
+VolunteerConnect is a responsive Vue 3 web application concept for a Melbourne health charity. It connects university student volunteers with practical programs that support older adults' health, independence and social connection, while giving VolunteerConnect coordinators a structured way to review applicants.
 
 ## Current scope
 
@@ -83,7 +83,3 @@ Application review controls are restricted to the coordinator account. Volunteer
 - Passwords use a unique salt and SHA-256 digest instead of plain-text storage.
 
 This remains a browser-only coursework prototype. Local Storage can be inspected or changed by a person with access to the browser and should not be treated as a production database for confidential data.
-
-## Image credits
-
-Opportunity photographs are sourced from [Unsplash](https://unsplash.com/) and stored locally for reliable classroom demonstrations.

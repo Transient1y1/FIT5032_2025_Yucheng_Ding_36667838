@@ -34,8 +34,8 @@ const router = createRouter({
       component: PlaceholderView,
       meta: {
         eyebrow: 'How it works',
-        title: 'A clearer path into volunteering',
-        description: 'The platform will connect discovery, preparation and follow-up in one place.',
+        title: 'A practical path into healthy ageing support',
+        description: 'Find a suitable program, check its training and access details, then follow your application in one place.',
       },
     },
     {
@@ -43,9 +43,9 @@ const router = createRouter({
       name: 'for-organisations',
       component: PlaceholderView,
       meta: {
-        eyebrow: 'For organisations',
-        title: 'A lighter way to coordinate volunteers',
-        description: 'Community organisations will have a structured space for roles and applicants.',
+        eyebrow: 'For coordinators',
+        title: 'Coordinate VolunteerConnect programs',
+        description: 'Program coordinators can review student applications and keep each volunteer informed of their outcome.',
       },
     },
     {

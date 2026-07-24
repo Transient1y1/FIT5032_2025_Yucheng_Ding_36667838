@@ -1,7 +1,7 @@
 import { seedOpportunities } from '../data/opportunities'
 import { isSafePlainText, isValidIdentifier } from '../utils/inputValidation'
 
-const STORAGE_KEY = 'vc_opportunities'
+const STORAGE_KEY = 'vc_opportunities_v2'
 const REQUIRED_TEXT_FIELDS = [
   'id',
   'title',

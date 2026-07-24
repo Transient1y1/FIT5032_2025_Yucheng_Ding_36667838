@@ -1,12 +1,11 @@
 <script setup>
-import heroImage from '../assets/opportunities/companion-visitor.jpg'
+import heroImage from '../assets/opportunities/companion-visitor.webp'
 import { getOpportunities } from '../services/opportunityStorage'
 
 const opportunities = getOpportunities()
 const featuredOpportunities = opportunities.slice(0, 3)
 const primaryOpportunity = featuredOpportunities[0]
 const supportingOpportunities = featuredOpportunities.slice(1)
-const causeCount = new Set(opportunities.map((opportunity) => opportunity.cause)).size
 </script>
 
 <template>
@@ -22,11 +21,11 @@ const causeCount = new Set(opportunities.map((opportunity) => opportunity.cause)
       <div class="container-xxl home-hero-content">
         <p class="home-hero-kicker mb-3">
           <span class="home-hero-marker" aria-hidden="true"></span>
-          Student volunteering across Melbourne
+          Student volunteers supporting older Melburnians
         </p>
-        <h1 id="home-heading" class="home-hero-title mb-4">Local volunteering that works with student life.</h1>
+        <h1 id="home-heading" class="home-hero-title mb-4">Practical support for healthier, more connected ageing.</h1>
         <p class="home-hero-copy mb-4">
-          See the time, place and support before you commit. Choose a role that fits around classes, work and everything else.
+          Join food, digital skills, companionship and community health programs that fit around classes, work and everything else.
         </p>
         <div class="home-hero-actions d-flex flex-wrap gap-2">
           <RouterLink class="btn btn-warning btn-lg" to="/opportunities">See open roles</RouterLink>
@@ -35,12 +34,12 @@ const causeCount = new Set(opportunities.map((opportunity) => opportunity.cause)
 
         <dl class="home-hero-facts mb-0">
           <div>
-            <dt>Open now</dt>
-            <dd>{{ opportunities.length }} roles</dd>
+            <dt>Support programs</dt>
+            <dd>{{ opportunities.length }} open</dd>
           </div>
           <div>
-            <dt>Community focus</dt>
-            <dd>{{ causeCount }} causes</dd>
+            <dt>Where</dt>
+            <dd>Across Melbourne</dd>
           </div>
           <div>
             <dt>Ways to join</dt>
@@ -54,7 +53,7 @@ const causeCount = new Set(opportunities.map((opportunity) => opportunity.cause)
       <header class="home-section-heading mb-4 mb-lg-5">
         <div>
           <p class="eyebrow mb-2">Open this week</p>
-          <h2 id="featured-heading" class="home-section-title mb-0">Three places to start.</h2>
+          <h2 id="featured-heading" class="home-section-title mb-0">Three ways to support healthy ageing.</h2>
         </div>
         <RouterLink class="home-text-link" to="/opportunities">View all {{ opportunities.length }} roles</RouterLink>
       </header>

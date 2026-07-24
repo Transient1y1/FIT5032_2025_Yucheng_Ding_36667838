@@ -50,7 +50,7 @@ function signOut() {
               <RouterLink class="nav-link" active-class="active" to="/how-it-works" @click="closeMenu">How it works</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" active-class="active" to="/for-organisations" @click="closeMenu">For organisations</RouterLink>
+              <RouterLink class="nav-link" active-class="active" to="/for-organisations" @click="closeMenu">For coordinators</RouterLink>
             </li>
             <li class="nav-item account-nav ms-lg-2">
               <RouterLink v-if="!currentUser" class="btn btn-outline-primary btn-sm px-3" to="/login" @click="closeMenu">

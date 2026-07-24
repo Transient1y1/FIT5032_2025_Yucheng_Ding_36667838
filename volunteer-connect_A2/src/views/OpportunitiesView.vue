@@ -59,11 +59,11 @@ function clearFilters() {
   <div class="opportunities-view">
     <header class="directory-header border-bottom">
       <div class="container-xxl py-4 py-lg-5">
-        <p class="eyebrow mb-2">Opportunity directory</p>
+        <p class="eyebrow mb-2">Older adult health support</p>
         <div class="row align-items-end g-3">
           <div class="col-lg-7">
             <h1 class="display-6 fw-bold mb-2">Make your next free hour count.</h1>
-            <p class="lead text-secondary mb-0">Compare practical details before choosing a role that works with your study week.</p>
+            <p class="lead text-secondary mb-0">Compare practical details and choose a role supporting older adults that works with your study week.</p>
           </div>
           <div class="col-lg-5">
             <label class="form-label fw-semibold" for="opportunity-search">Search opportunities</label>
@@ -73,7 +73,7 @@ function clearFilters() {
               class="form-control form-control-lg"
               type="search"
               maxlength="80"
-              placeholder="Role, cause, organisation or place"
+              placeholder="Role, support area or place"
             />
           </div>
         </div>
@@ -148,7 +148,7 @@ function clearFilters() {
             <h2 id="results-heading" class="h5 mb-0">
               {{ filteredOpportunities.length }} {{ filteredOpportunities.length === 1 ? 'opportunity' : 'opportunities' }}
             </h2>
-            <p class="small text-secondary mb-0">Student-friendly roles across Melbourne</p>
+            <p class="small text-secondary mb-0">Student volunteer roles supporting older adults</p>
           </div>
 
           <div v-if="filteredOpportunities.length" class="d-grid gap-3">
@@ -162,7 +162,7 @@ function clearFilters() {
           <div v-else class="empty-state p-4 p-lg-5 text-center">
             <p class="eyebrow mb-2">No matching roles</p>
             <h2 class="h4 mb-2">Try a broader search.</h2>
-            <p class="text-secondary mb-4">Clear one or more filters to see other student-friendly opportunities.</p>
+            <p class="text-secondary mb-4">Clear one or more filters to see other older adult health support roles.</p>
             <button class="btn btn-primary" type="button" @click="clearFilters">Reset filters</button>
           </div>
         </section>

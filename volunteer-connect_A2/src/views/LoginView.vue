@@ -1,7 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import loginImage from '../assets/opportunities/digital-tutor.jpg'
+import loginImage from '../assets/opportunities/digital-tutor.webp'
 import { getDashboardPath, login } from '../services/authService'
 import { isValidEmail } from '../utils/inputValidation'
 

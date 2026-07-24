@@ -1,7 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import registerImage from '../assets/opportunities/food-relief.jpg'
+import registerImage from '../assets/opportunities/food-relief.webp'
 import { getDashboardPath, registerVolunteer } from '../services/authService'
 import { isStrongPassword, isValidEmail, isValidName } from '../utils/inputValidation'
 

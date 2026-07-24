@@ -152,6 +152,11 @@ export function getCurrentUser() {
   return currentUser.value
 }
 
+export function getUserForCoordinator(userId) {
+  if (currentUser.value?.role !== 'coordinator' || typeof userId !== 'string') return null
+  return publicUser(readUsers().find((user) => user.id === userId))
+}
+
 export function getDashboardPath(user = currentUser.value) {
   return user?.role === 'coordinator' ? '/coordinator/dashboard' : '/volunteer/dashboard'
 }

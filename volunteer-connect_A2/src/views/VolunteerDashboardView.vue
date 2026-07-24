@@ -54,7 +54,7 @@ loadDashboard()
   <section class="dashboard-page container-xxl py-5 py-lg-6">
     <div class="dashboard-heading mb-4">
       <p class="eyebrow mb-2">Volunteer account</p>
-      <h1 class="display-6 fw-bold mb-2">Welcome back, {{ currentUser.name }}.</h1>
+      <h1 class="display-6 fw-bold mb-2">Welcome back, {{ currentUser?.name }}.</h1>
       <p class="lead text-secondary mb-0">Your volunteering choices and updates will stay together here.</p>
     </div>
 

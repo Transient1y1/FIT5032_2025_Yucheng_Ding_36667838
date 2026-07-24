@@ -1,6 +1,9 @@
+import { getCurrentUser } from './authService'
+
 const SAVED_KEY = 'vc_saved_opportunities'
 const APPLICATIONS_KEY = 'vc_applications'
 const APPLICATION_STATUSES = ['pending', 'accepted', 'waitlisted', 'declined', 'more-information']
+const REVIEW_STATUSES = ['accepted', 'waitlisted', 'declined', 'more-information']
 
 function readList(key) {
   const storedValue = localStorage.getItem(key)
@@ -82,6 +85,38 @@ export function getApplicationForOpportunity(userId, opportunityId) {
   return getApplicationsForUser(userId).find(
     (application) => application.opportunityId === opportunityId,
   ) || null
+}
+
+export function getApplicationsForCoordinator() {
+  if (getCurrentUser()?.role !== 'coordinator') return []
+  return readApplications()
+}
+
+export function updateApplicationStatus(applicationId, status) {
+  if (getCurrentUser()?.role !== 'coordinator') {
+    return { ok: false, message: 'Coordinator access is required.' }
+  }
+
+  if (!validId(applicationId) || !REVIEW_STATUSES.includes(status)) {
+    return { ok: false, message: 'Choose a valid application status.' }
+  }
+
+  const applications = readApplications()
+  const applicationIndex = applications.findIndex(
+    (application) => application.id === applicationId,
+  )
+
+  if (applicationIndex < 0) {
+    return { ok: false, message: 'The application could not be found.' }
+  }
+
+  applications[applicationIndex] = {
+    ...applications[applicationIndex],
+    status,
+    updatedAt: new Date().toISOString(),
+  }
+  saveList(APPLICATIONS_KEY, applications)
+  return { ok: true, application: applications[applicationIndex] }
 }
 
 export function createApplication(userId, opportunityId, form) {

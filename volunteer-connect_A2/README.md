@@ -4,7 +4,7 @@ VolunteerConnect is a responsive Vue 3 web application concept for helping unive
 
 ## Current scope
 
-The first four milestones provide:
+The first five milestones provide:
 
 - Vue 3 with Vite
 - Bootstrap 5 responsive layout
@@ -22,8 +22,12 @@ The first four milestones provide:
 - An expression of interest form with required, length and consent validation
 - Duplicate application prevention and application confirmation
 - A volunteer dashboard with saved roles and application statuses
+- A coordinator dashboard grouped by opportunity and applicant
+- Coordinator access to volunteer availability, skills, notes and motivation
+- Accept, waitlist, decline and request-more-information outcomes
+- Application status updates visible on the volunteer dashboard
 
-Coordinator review, ratings and final security validation are intentionally scheduled for later commits.
+Ratings and final security validation are intentionally scheduled for the next commit.
 
 ## Setup
 
@@ -61,6 +65,8 @@ Coordinator: `coordinator@volunteerconnect.test` / `Coord123!`
 New registrations create volunteer accounts. Coordinator access is not available through the public registration form.
 
 Authentication is implemented in the browser for this coursework prototype. It uses Local Storage for user records and Session Storage for the active user ID.
+
+Application review controls are restricted to the coordinator account. Volunteer accounts are redirected away from the coordinator route and cannot call the status update service successfully.
 
 ## Image credits
 

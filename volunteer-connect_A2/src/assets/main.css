@@ -617,6 +617,93 @@ h3,
   padding: 1.5rem 0;
 }
 
+.coordinator-review {
+  border-top: 3px solid var(--vc-green);
+  border-bottom: 1px solid var(--vc-line);
+}
+
+.review-group {
+  border-bottom: 1px solid var(--vc-line);
+}
+
+.review-group:last-child {
+  border-bottom: 0;
+}
+
+.review-group-heading,
+.review-applicant-heading,
+.review-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.review-group-heading {
+  padding: 1.25rem;
+  background: var(--vc-mist);
+}
+
+.review-total {
+  color: var(--vc-green-dark);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.review-item {
+  padding: 1.5rem 1.25rem;
+  border-bottom: 1px solid var(--vc-line);
+}
+
+.review-item:last-child {
+  border-bottom: 0;
+}
+
+.review-answer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.5rem;
+  padding: 1.25rem 0;
+  margin: 1rem 0;
+  border-top: 1px solid var(--vc-line);
+  border-bottom: 1px solid var(--vc-line);
+}
+
+.review-motivation {
+  grid-column: 1 / -1;
+}
+
+.review-label {
+  margin-bottom: 0.35rem;
+  color: #71807d;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.review-status-field {
+  width: min(100%, 300px);
+}
+
+.review-controls {
+  justify-content: flex-start;
+}
+
+.review-controls .btn {
+  align-self: flex-end;
+}
+
+.review-feedback {
+  align-self: flex-end;
+  padding-bottom: 0.55rem;
+  font-size: 0.82rem;
+}
+
+.review-feedback-success {
+  color: var(--vc-green);
+  font-weight: 700;
+}
+
 @media (max-width: 991.98px) {
   .navbar-collapse {
     padding: 0.75rem 0 0.25rem;
@@ -652,6 +739,20 @@ h3,
 
   .detail-action-panel {
     margin-bottom: 1rem;
+  }
+
+  .review-controls {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .review-controls .btn,
+  .review-feedback {
+    align-self: flex-start;
+  }
+
+  .review-feedback {
+    padding-bottom: 0;
   }
 }
 
@@ -698,6 +799,20 @@ h3,
 
   .dashboard-list-item {
     flex-direction: column;
+  }
+
+  .review-group-heading,
+  .review-applicant-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .review-answer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .review-motivation {
+    grid-column: auto;
   }
 
   .section-number {

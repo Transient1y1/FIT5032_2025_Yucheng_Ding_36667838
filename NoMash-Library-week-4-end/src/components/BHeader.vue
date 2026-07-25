@@ -1,8 +1,22 @@
 <script setup>
+import { onMounted, onUnmounted, ref } from 'vue'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { useRouter } from 'vue-router'
 import { isAuthenticated, logout } from '../auth'
 
 const router = useRouter()
+const firebaseUser = ref(null)
+let unsubscribeFirebaseAuth
+
+onMounted(() => {
+  unsubscribeFirebaseAuth = onAuthStateChanged(getAuth(), (user) => {
+    firebaseUser.value = user
+  })
+})
+
+onUnmounted(() => {
+  unsubscribeFirebaseAuth?.()
+})
 
 const handleLogout = () => {
   logout()
@@ -24,18 +38,34 @@ const handleLogout = () => {
         <li v-if="isAuthenticated" class="nav-item">
           <router-link to="/about" class="nav-link" active-class="active">About</router-link>
         </li>
-        <li v-if="!isAuthenticated" class="nav-item">
+        <li v-if="!isAuthenticated && !firebaseUser" class="nav-item">
           <router-link to="/login" class="nav-link" active-class="active">Login</router-link>
         </li>
-        <li v-else class="nav-item">
+        <li v-else-if="isAuthenticated" class="nav-item">
           <button type="button" class="nav-link" @click="handleLogout">Logout</button>
         </li>
-        <li class="nav-item">
-          <router-link to="/Firelogin" class="nav-link" active-class="active">Firebase Login</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link to="/FireRegister" class="nav-link" active-class="active">Firebase Register</router-link>
-        </li>
+        <template v-if="firebaseUser">
+          <li class="nav-item">
+            <span class="nav-link disabled">Role: {{ firebaseUser.displayName || 'Member' }}</span>
+          </li>
+          <li class="nav-item">
+            <router-link to="/FireLogout" class="nav-link" active-class="active"
+              >Firebase Logout</router-link
+            >
+          </li>
+        </template>
+        <template v-else>
+          <li class="nav-item">
+            <router-link to="/Firelogin" class="nav-link" active-class="active"
+              >Firebase Login</router-link
+            >
+          </li>
+          <li class="nav-item">
+            <router-link to="/FireRegister" class="nav-link" active-class="active"
+              >Firebase Register</router-link
+            >
+          </li>
+        </template>
       </ul>
     </header>
   </div>

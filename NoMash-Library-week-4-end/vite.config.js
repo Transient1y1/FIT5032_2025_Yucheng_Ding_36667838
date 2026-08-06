@@ -6,7 +6,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/FIT5032_2025_Yucheng_Ding_36667838/',
+  base: process.env.VERCEL ? '/' : '/FIT5032_2025_Yucheng_Ding_36667838/',
   plugins: [
     vue(),
     vueDevTools(),

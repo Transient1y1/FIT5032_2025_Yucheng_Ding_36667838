@@ -10,6 +10,7 @@ import AddBookView from '@/views/AddBookView.vue'
 import WeatherView from '@/views/WeatherView.vue'
 import CountBookAPI from '@/views/CountBookAPI.vue'
 import GetAllBookAPI from '@/views/GetAllBookAPI.vue'
+import GetBookCountView from '@/views/GetBookCountView.vue'
 import { isAuthenticated } from '../auth'
 
 const routes = [
@@ -68,11 +69,16 @@ const routes = [
     path: '/GetAllBookAPI',
     name: 'GetAllBookAPI',
     component: GetAllBookAPI
+  },
+  {
+    path: '/book-count',
+    name: 'BookCount',
+    component: GetBookCountView
   }
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes
 })
 

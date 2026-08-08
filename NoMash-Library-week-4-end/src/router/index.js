@@ -11,6 +11,7 @@ import WeatherView from '@/views/WeatherView.vue'
 import CountBookAPI from '@/views/CountBookAPI.vue'
 import GetAllBookAPI from '@/views/GetAllBookAPI.vue'
 import GetBookCountView from '@/views/GetBookCountView.vue'
+import SellBookView from '@/views/SellBookView.vue'
 import { isAuthenticated } from '../auth'
 
 const routes = [
@@ -74,6 +75,11 @@ const routes = [
     path: '/book-count',
     name: 'BookCount',
     component: GetBookCountView
+  },
+  {
+    path: '/sell-book',
+    name: 'SellBook',
+    component: SellBookView
   }
 ]
 

@@ -1,28 +1,25 @@
 <script setup>
 import { ref } from 'vue'
-import axios from 'axios'
-
 const count = ref(null)
 const errorMessage = ref('')
-const functionUrl = import.meta.env.VITE_COUNT_BOOKS_URL
+const functionUrl = import.meta.env.VITE_COUNT_BOOKS_URL || '/api/countBooks'
 
 const getBookCount = async () => {
   count.value = null
   errorMessage.value = ''
 
-  if (!functionUrl) {
-    errorMessage.value = 'The book counter is not configured.'
-    return
-  }
-
   try {
-    const response = await axios.get(functionUrl)
+    const response = await fetch(functionUrl)
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`)
+    }
 
-    if (typeof response.data?.count !== 'number') {
+    const data = await response.json()
+    if (typeof data?.count !== 'number') {
       throw new Error('Invalid API response.')
     }
 
-    count.value = response.data.count
+    count.value = data.count
   } catch (error) {
     console.error('Unable to get book count:', error)
     errorMessage.value = 'Unable to get the book count.'

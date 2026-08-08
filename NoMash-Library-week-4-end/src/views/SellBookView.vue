@@ -31,11 +31,14 @@ const sellBook = async () => {
 </script>
 
 <template>
-  <div class="container mt-5">
+  <div class="container mt-5 text-center">
     <h1>Sell a Book</h1>
     <p>Choose a title from the JSON catalogue and create a Vercel Function sale receipt.</p>
 
-    <form class="row g-2 align-items-end" @submit.prevent="sellBook">
+    <form
+      class="row g-2 justify-content-center align-items-end text-start"
+      @submit.prevent="sellBook"
+    >
       <div class="col-sm-8 col-md-6">
         <label for="book-title" class="form-label">Book title</label>
         <input id="book-title" v-model="title" class="form-control" required />
@@ -47,11 +50,13 @@ const sellBook = async () => {
       </div>
     </form>
 
-    <div v-if="sale" class="alert alert-success mt-4" role="status">
+    <div v-if="sale" class="alert alert-success col-md-8 mx-auto mt-4 text-start" role="status">
       <strong>{{ sale.message }}</strong>
       <div>Author: {{ sale.book.author }}</div>
       <div>Receipt: {{ sale.receipt }}</div>
     </div>
-    <p v-if="errorMessage" class="alert alert-danger mt-4" role="alert">{{ errorMessage }}</p>
+    <p v-if="errorMessage" class="alert alert-danger col-md-8 mx-auto mt-4 text-start" role="alert">
+      {{ errorMessage }}
+    </p>
   </div>
 </template>

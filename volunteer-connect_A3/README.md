@@ -72,7 +72,7 @@ npm run preview
 3. Install and connect the Neon Marketplace integration to this Vercel project, then add its `POSTGRES_URL` environment variable.
 4. Add a generated `JWT_SECRET` of at least 32 random characters. Keep it server-only; do not prefix it with `VITE_`.
 5. Set `VITE_API_ENABLED=true` for Preview and Production. Keep `VITE_API_BASE_URL` empty for the same-origin Vercel API.
-6. Add `RESEND_API_KEY`, `MAIL_FROM`, and optional `AI_API_KEY`/`AI_ENDPOINT` as server-only variables.
+6. Add `RESEND_API_KEY`, `MAIL_FROM`, and optional `AI_API_KEY`/`AI_ENDPOINT` as server-only variables. Set `AI_PROVIDER=deepseek` and optionally `AI_MODEL=deepseek-chat` for DeepSeek, or leave the default `gemini` provider.
 7. Deploy with `npm run deploy:vercel`. The first database-backed request creates the tables, seeds six opportunities and creates the coordinator demo account. `schema.sql` is provided for manual Neon migration and the API also applies the same idempotent schema automatically.
 
 The first production deployment is available at `https://volunteer-connect-a3.vercel.app`. To enable automatic deployments, connect the GitHub repository from **Vercel Project Settings > Git** after authorising the Vercel GitHub App for `Transient1y1/FIT5032_2025_Yucheng_Ding_36667838`; set `codex/a3-vercel-deploy` as the production branch or merge it into `main` first.

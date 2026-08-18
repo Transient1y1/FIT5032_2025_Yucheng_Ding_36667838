@@ -74,6 +74,8 @@ npm run preview
 5. Deploy the Firebase backend separately with `npm run deploy:firebase-backend` from a machine authenticated to Firebase. Vercel replaces Firebase Hosting only; Firebase Auth, Firestore and Cloud Functions remain the application backend.
 6. Give the coordinator user the `coordinator` custom claim before relying on Firestore coordinator-only rules. The local demo account remains available before Firebase configuration.
 
+The first production deployment is available at `https://volunteer-connect-a3.vercel.app`. To enable automatic deployments, connect the GitHub repository from **Vercel Project Settings > Git** after authorising the Vercel GitHub App for `Transient1y1/FIT5032_2025_Yucheng_Ding_36667838`; set `codex/a3-vercel-deploy` as the production branch or merge it into `main` first.
+
 `firestore.rules` protects owner records and coordinator-only writes. The HTTP API deliberately exposes only opportunity records; administrative totals use the authenticated callable function.
 
 ## Business requirement progress

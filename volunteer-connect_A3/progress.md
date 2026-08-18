@@ -13,3 +13,7 @@
 - Started Vite on `http://127.0.0.1:4173` and confirmed `/`, `/opportunities` and `/coordinator/dashboard` return HTTP 200.
 - Loaded `functions/index.js` with Node successfully.
 - Replaced Leaflet HTML popup interpolation with DOM text nodes to preserve A2's safe-rendering boundary.
+- Replaced Firebase Hosting configuration in the deployment workflow with Vercel `vercel.json` and `deploy:vercel`.
+- Created Vercel project `26710/volunteer-connect-a3` and deployed the production build successfully.
+- Confirmed the production home, opportunities and coordinator routes return HTTP 200.
+- Git auto-deployment remains pending Vercel GitHub App authorization for the repository.

@@ -11,11 +11,11 @@ The completed development milestones provide:
 - Vue Router route structure
 - Responsive navigation and footer
 - Public home page and supporting information routes
-- Six dynamic opportunity records seeded into Local Storage
+- Six dynamic opportunity records seeded into Neon/Postgres on first API access
 - Keyword search and filters for cause, location, mode, commitment and experience
 - Responsive opportunity result cards and complete detail pages
 - Empty search results and invalid opportunity states
-- Volunteer registration and login with session restoration
+- Volunteer registration and login with JWT session restoration
 - A pre-seeded coordinator account
 - Role-protected volunteer and coordinator dashboard routes
 - Volunteer-specific saved opportunities stored in Local Storage
@@ -33,17 +33,17 @@ The completed development milestones provide:
 - Same-origin Content Security Policy and allowlisted status and rating values
 - Vue text interpolation without raw HTML rendering
 
-The A3 implementation retains the A2 requirements and adds the advanced D, E and F feature set. It runs in Local demonstration mode until Firebase variables are supplied, allowing the complete user interface to be reviewed without exposing credentials.
+The A3 implementation retains the A2 requirements and adds the advanced D, E and F feature set. Production authentication and data use Vercel Functions, Neon/Postgres and HttpOnly JWT cookies. A local demonstration fallback remains available when the API is deliberately disabled, allowing the interface to be reviewed without exposing credentials.
 
 ## A3 advanced features
 
-- Firebase-ready external authentication, Firestore data contracts, Cloud Functions and Hosting configuration.
+- Vercel Functions, Neon/Postgres data contracts and JWT HttpOnly-cookie authentication.
 - Reusable interactive opportunity and application tables with individual-column search, sorting and ten rows per page.
 - CSV exports and printable PDF administrator reports.
 - Leaflet/OpenStreetMap opportunity map with place search and OSRM route planning.
 - FullCalendar booking interface with local conflict detection.
 - Coordinator command centre with interactive Chart.js charts, selectable applicants and bulk-email preparation.
-- Resend email Cloud Functions with attachment support and a safe no-key demonstration response.
+- Resend email Vercel Functions with attachment support and a safe no-key demonstration response.
 - REST Functions API: `GET /api/opportunities` and `GET /api/opportunities/:id`.
 - Provider-neutral GenAI Function with a safe demonstration insight when no AI key is configured.
 - Service Worker application-shell cache, online/offline status, saved application drafts and offline action queue.
@@ -69,14 +69,15 @@ npm run preview
 
 1. Import this repository in Vercel and set the project Root Directory to `volunteer-connect_A3`.
 2. Keep the Vite defaults from `vercel.json`: `npm ci`, `npm run build`, output directory `dist`.
-3. Add the `VITE_FIREBASE_*` variables from `.env.example` in Vercel Project Settings for Preview and Production environments.
-4. Add `VITE_FUNCTIONS_BASE_URL` pointing to the deployed Firebase `api` function if the REST preview is enabled.
-5. Deploy the Firebase backend separately with `npm run deploy:firebase-backend` from a machine authenticated to Firebase. Vercel replaces Firebase Hosting only; Firebase Auth, Firestore and Cloud Functions remain the application backend.
-6. Give the coordinator user the `coordinator` custom claim before relying on Firestore coordinator-only rules. The local demo account remains available before Firebase configuration.
+3. Install and connect the Neon Marketplace integration to this Vercel project, then add its `POSTGRES_URL` environment variable.
+4. Add a generated `JWT_SECRET` of at least 32 random characters. Keep it server-only; do not prefix it with `VITE_`.
+5. Set `VITE_API_ENABLED=true` for Preview and Production. Keep `VITE_API_BASE_URL` empty for the same-origin Vercel API.
+6. Add `RESEND_API_KEY`, `MAIL_FROM`, and optional `AI_API_KEY`/`AI_ENDPOINT` as server-only variables.
+7. Deploy with `npm run deploy:vercel`. The first database-backed request creates the tables, seeds six opportunities and creates the coordinator demo account. `schema.sql` is provided for manual Neon migration and the API also applies the same idempotent schema automatically.
 
 The first production deployment is available at `https://volunteer-connect-a3.vercel.app`. To enable automatic deployments, connect the GitHub repository from **Vercel Project Settings > Git** after authorising the Vercel GitHub App for `Transient1y1/FIT5032_2025_Yucheng_Ding_36667838`; set `codex/a3-vercel-deploy` as the production branch or merge it into `main` first.
 
-`firestore.rules` protects owner records and coordinator-only writes. The HTTP API deliberately exposes only opportunity records; administrative totals use the authenticated callable function.
+The Vercel API checks JWT sessions and role claims before reading or changing protected records. Public opportunity endpoints remain readable without a session.
 
 ## Business requirement progress
 
@@ -90,11 +91,11 @@ The first production deployment is available at `https://volunteer-connect-a3.ve
 | BR C.2 – Role-based authentication | Implemented |
 | BR C.3 – Aggregated rating | Implemented |
 | BR C.4 – Basic security | Implemented |
-| BR D.1 – External authentication | Firebase-ready with local demonstration fallback |
-| BR D.2 – Email with attachment | Resend Cloud Function contract and batch email UI |
+| BR D.1 – External authentication | Vercel API JWT authentication with local demonstration fallback |
+| BR D.2 – Email with attachment | Resend Vercel Function contract and batch email UI |
 | BR D.3 – Interactive table data | Implemented for opportunities and applications |
 | BR D.4 – Cloud deployment | Vercel configuration included |
-| BR E.1 – Cloud functions | Functions source included |
+| BR E.1 – Cloud functions | Vercel Functions source included |
 | BR E.2 – Geo location | Leaflet search, markers and route planning implemented |
 | BR E.3 – Accessibility | WCAG-focused interaction improvements implemented |
 | BR E.4 – Export | CSV and PDF exports implemented |
@@ -106,7 +107,7 @@ Coordinator: `coordinator@volunteerconnect.test` / `Coord123!`
 
 New registrations create volunteer accounts. Coordinator access is not available through the public registration form.
 
-Authentication is implemented in the browser for this coursework prototype. It uses Local Storage for user records and Session Storage for the active user ID.
+Authentication is implemented by the Vercel API in the deployed application. Neon stores user records and the API issues an HttpOnly `vc_session` JWT cookie. The browser-only Local Storage flow is retained only as an explicit local demonstration fallback.
 
 Application review controls are restricted to the coordinator account. Volunteer accounts are redirected away from the coordinator route and cannot call the status update service successfully.
 
@@ -116,6 +117,6 @@ Application review controls are restricted to the coordinator account. Volunteer
 - Names, emails, passwords, EOI fields, identifiers, ratings and application statuses are checked at the client and service boundaries.
 - Text fields reject HTML brackets and control characters and apply explicit length limits.
 - The Content Security Policy limits scripts, images, forms and connections to approved sources.
-- Passwords use a unique salt and SHA-256 digest instead of plain-text storage.
+- Passwords are hashed with Node `crypto.scrypt`; plain-text passwords are never stored.
 
-This remains a browser-only coursework prototype. Local Storage can be inspected or changed by a person with access to the browser and should not be treated as a production database for confidential data.
+The deployed application uses Neon/Postgres for server-side records. Local Storage is used only for saved opportunities, offline drafts and the opt-in local demonstration fallback.

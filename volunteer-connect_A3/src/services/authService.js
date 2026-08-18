@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { isStrongPassword, isValidEmail, isValidIdentifier, isValidName } from '../utils/inputValidation'
-import { cloudLogin, cloudLogout, cloudRegister, isCloudConfigured, subscribeCloudAuth } from './cloudService'
+import { cloudLogin, cloudLogout, cloudRegister, getCloudSession, isCloudConfigured } from './cloudService'
 
 const USERS_KEY = 'vc_users'
 const SESSION_KEY = 'vc_session'
@@ -96,25 +96,11 @@ function readSessionUser(users) {
 
 export async function initialiseAuth() {
   if (isCloudConfigured()) {
-    await new Promise((resolve) => {
-      let resolved = false
-      const unsubscribe = subscribeCloudAuth((user) => {
-        currentUser.value = user
-        if (!resolved) {
-          resolved = true
-          unsubscribe()
-          resolve()
-        }
-      })
-      window.setTimeout(() => {
-        if (!resolved) {
-          resolved = true
-          unsubscribe()
-          resolve()
-        }
-      }, 1500)
-    })
-    return
+    const session = await getCloudSession()
+    if (session.ok) {
+      currentUser.value = session.user
+      return
+    }
   }
 
   const users = readUsers()
@@ -139,7 +125,7 @@ export async function login(email, password) {
     const result = await cloudLogin(email, password)
     if (result.ok && result.user?.email === DEMO_COORDINATOR.email) result.user.role = 'coordinator'
     if (result.ok) currentUser.value = result.user
-    return result
+    if (result.ok || (result.status && result.status !== 503)) return result
   }
 
   const user = readUsers().find((item) => item.email === normaliseEmail(email))
@@ -169,7 +155,7 @@ export async function registerVolunteer({ name, email, password }) {
   if (isCloudConfigured()) {
     const result = await cloudRegister({ name, email: normaliseEmail(email), password })
     if (result.ok) currentUser.value = result.user
-    return result
+    if (result.ok || (result.status && result.status !== 503)) return result
   }
 
   const users = readUsers()

@@ -49,12 +49,12 @@ function drawCharts() {
 async function bulkEmail() {
   if (!selectedRecipients.value.length) { feedback.value = 'Select at least one applicant with an available email address.'; return }
   const result = await sendBulkEmail({ recipients: selectedRecipients.value, subject: 'VolunteerConnect application update', text: 'Thank you for taking part in VolunteerConnect.', attachments: [csvAttachment(applications.value.filter((item) => selected.value.includes(item.id)))] })
-  feedback.value = result.ok ? 'Bulk email queued successfully.' : 'Bulk email is ready for deployment; configure Resend to send it from Cloud Functions.'
+  feedback.value = result.ok ? 'Bulk email queued successfully.' : 'Bulk email is ready for deployment; configure Resend for the Vercel API.'
 }
 function exportApplications() { downloadCsv('volunteerconnect-applications.csv', applications.value.map(({ applicantName, applicantEmail, opportunityTitle, status, submittedAt }) => ({ applicantName, applicantEmail, opportunityTitle, status, submittedAt }))); feedback.value = 'Applications CSV downloaded.' }
 function exportReport() { downloadPdf('volunteerconnect-admin-report.pdf', 'VolunteerConnect application report', applications.value.map(({ applicantName, opportunityTitle, status, submittedAt }) => ({ applicantName, opportunityTitle, status, submittedAt }))); feedback.value = 'PDF report downloaded.' }
 async function runAi() { const result = await generateAiSuggestion({ prompt: aiPrompt.value || 'Summarise the current volunteer application workload.', context: applications.value.slice(0, 20) }); aiResult.value = result.ok ? result.data?.text || 'The AI service returned no text.' : 'Demo insight: focus coordinator attention on pending applications and upcoming sessions.' }
-async function loadApiPreview() { try { const response = await fetch(getRestApiUrl('/api/opportunities')); apiResult.value = JSON.stringify(await response.json(), null, 2).slice(0, 1000) } catch { apiResult.value = 'REST API is available after Firebase Functions deployment.' } }
+async function loadApiPreview() { try { const response = await fetch(getRestApiUrl('/api/opportunities')); apiResult.value = JSON.stringify(await response.json(), null, 2).slice(0, 1000) } catch { apiResult.value = 'REST API is available after the Neon-backed Vercel API is configured.' } }
 onMounted(async () => { await nextTick(); drawCharts(); if (getCloudStats) getCloudStats().catch(() => {}) })
 </script>
 
@@ -90,4 +90,3 @@ onMounted(async () => { await nextTick(); drawCharts(); if (getCloudStats) getCl
     <section class="dashboard-action p-4 p-lg-5" aria-labelledby="api-heading"><div><p class="eyebrow mb-2">REST API</p><h2 id="api-heading" class="h3 mb-2">A documented public data surface.</h2><p class="text-secondary mb-0">The deployed Functions API exposes opportunity records and administrator statistics for approved integrations.</p></div><button class="btn btn-outline-primary" type="button" @click="loadApiPreview">Preview opportunities API</button><pre v-if="apiResult" class="api-preview mt-3 mb-0" aria-live="polite">{{ apiResult }}</pre></section>
   </section>
 </template>
-

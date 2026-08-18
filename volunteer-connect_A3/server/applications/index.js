@@ -10,8 +10,8 @@ export default async function handler(request, response) {
   try {
     if (request.method === 'GET') {
       const result = await withDatabase(async (sql) => session.role === 'coordinator' || session.role === 'admin'
-        ? await sql.query('SELECT id, user_id AS "userId", opportunity_id AS "opportunityId", availability, skills_notes AS "skillsNotes", motivation, status, submitted_at AS "submittedAt", updated_at AS "updatedAt" FROM applications ORDER BY submitted_at DESC')
-        : await sql.query('SELECT id, user_id AS "userId", opportunity_id AS "opportunityId", availability, skills_notes AS "skillsNotes", motivation, status, submitted_at AS "submittedAt", updated_at AS "updatedAt" FROM applications WHERE user_id = $1 ORDER BY submitted_at DESC', [session.sub]))
+        ? await sql.query('SELECT a.id, a.user_id AS "userId", a.opportunity_id AS "opportunityId", a.availability, a.skills_notes AS "skillsNotes", a.motivation, a.status, a.submitted_at AS "submittedAt", a.updated_at AS "updatedAt", u.name AS "applicantName", u.email AS "applicantEmail" FROM applications a JOIN users u ON u.id = a.user_id ORDER BY a.submitted_at DESC')
+        : await sql.query('SELECT a.id, a.user_id AS "userId", a.opportunity_id AS "opportunityId", a.availability, a.skills_notes AS "skillsNotes", a.motivation, a.status, a.submitted_at AS "submittedAt", a.updated_at AS "updatedAt", u.name AS "applicantName", u.email AS "applicantEmail" FROM applications a JOIN users u ON u.id = a.user_id WHERE a.user_id = $1 ORDER BY a.submitted_at DESC', [session.sub]))
       if (!result.configured) return databaseError(response)
       return response.status(200).json({ ok: true, data: result.value })
     }
@@ -31,4 +31,3 @@ export default async function handler(request, response) {
     return response.status(201).json({ ok: true, data: result.value.application })
   } catch { return response.status(503).json({ ok: false, message: 'The application service is temporarily unavailable.' }) }
 }
-

@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { currentUser, getUserForCoordinator } from '../services/authService'
 import { getApplicationsForCoordinator, updateApplicationStatus } from '../services/applicationService'
 import { getOpportunities, getOpportunityById } from '../services/opportunityStorage'
+import { apiEnabled, apiListApplications, apiUpdateApplicationStatus } from '../services/apiService'
 
 const applications = ref([])
 const feedback = ref({ applicationId: '', type: '', message: '' })
@@ -32,18 +33,26 @@ const applicationGroups = computed(() => {
   return Array.from(groups.values())
 })
 
-function loadApplications() {
-  applications.value = getApplicationsForCoordinator()
+async function loadApplications() {
+  const localApplications = getApplicationsForCoordinator()
+  let remoteApplications = null
+  if (apiEnabled) {
+    const result = await apiListApplications()
+    if (result.ok) remoteApplications = result.data || []
+  }
+  applications.value = (remoteApplications || localApplications)
     .map((application) => ({
       ...application,
-      applicant: getUserForCoordinator(application.userId),
+      applicant: application.applicantName
+        ? { name: application.applicantName, email: application.applicantEmail }
+        : getUserForCoordinator(application.userId),
       opportunity: getOpportunityById(application.opportunityId),
       nextStatus: application.status === 'pending' ? '' : application.status,
     }))
     .filter((application) => application.opportunity)
 }
 
-function saveStatus(application) {
+async function saveStatus(application) {
   feedback.value = { applicationId: '', type: '', message: '' }
 
   if (!application.nextStatus) {
@@ -55,7 +64,9 @@ function saveStatus(application) {
     return
   }
 
-  const result = updateApplicationStatus(application.id, application.nextStatus)
+  const result = apiEnabled
+    ? await apiUpdateApplicationStatus(application.id, application.nextStatus)
+    : updateApplicationStatus(application.id, application.nextStatus)
   if (!result.ok) {
     feedback.value = {
       applicationId: application.id,
@@ -65,7 +76,7 @@ function saveStatus(application) {
     return
   }
 
-  application.status = result.application.status
+  application.status = result.data?.status || result.application?.status
   feedback.value = {
     applicationId: application.id,
     type: 'success',

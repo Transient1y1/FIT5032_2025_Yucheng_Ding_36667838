@@ -13,6 +13,7 @@ import { getRatingSummary, getVolunteerRating, saveOpportunityRating } from '../
 import { isSafePlainText } from '../utils/inputValidation'
 import BookingCalendar from '../components/BookingCalendar.vue'
 import { cacheDraft, clearDraft, isOnline, queueOfflineAction, readDraft } from '../services/offlineService'
+import { apiCreateApplication, apiCreateBooking, apiEnabled, apiGetRating, apiListApplications, apiSaveRating } from '../services/apiService'
 
 const route = useRoute()
 const opportunity = computed(() => getOpportunityById(route.params.id))
@@ -37,7 +38,7 @@ watch(form, (value) => {
   if (opportunity.value) cacheDraft(`application_${opportunity.value.id}`, value)
 }, { deep: true })
 
-watch([opportunity, currentUser], () => {
+watch([opportunity, currentUser], async () => {
   const userId = currentUser.value?.id
   const opportunityId = opportunity.value?.id
   isSaved.value = Boolean(userId && opportunityId && isOpportunitySaved(userId, opportunityId))
@@ -53,6 +54,15 @@ watch([opportunity, currentUser], () => {
   if (opportunityId) {
     const draft = readDraft(`application_${opportunityId}`, {})
     Object.assign(form, { availability: '', skillsNotes: '', motivation: '', consent: false, ...draft })
+  }
+  if (apiEnabled && userId && opportunityId) {
+    const [applicationsResult, ratingResult] = await Promise.all([apiListApplications(), apiGetRating(opportunityId)])
+    if (applicationsResult.ok) application.value = applicationsResult.data?.find((item) => item.opportunityId === opportunityId) || null
+    if (ratingResult.ok) {
+      ratingSummary.value = { average: Number(ratingResult.data?.average || 0), count: Number(ratingResult.data?.count || 0) }
+      savedRating.value = ratingResult.data?.userScore ? { score: ratingResult.data.userScore } : null
+      selectedRating.value = savedRating.value?.score || 0
+    }
   }
 }, { immediate: true })
 
@@ -81,7 +91,7 @@ function validateForm() {
   return Object.keys(errors).length === 0
 }
 
-function submitApplication() {
+async function submitApplication() {
   submitError.value = ''
   offlineFeedback.value = ''
   if (!isVolunteer.value || !opportunity.value || !validateForm()) return
@@ -92,13 +102,15 @@ function submitApplication() {
     return
   }
 
-  const result = createApplication(currentUser.value.id, opportunity.value.id, form)
+  const result = apiEnabled
+    ? await apiCreateApplication({ opportunityId: opportunity.value.id, ...form })
+    : createApplication(currentUser.value.id, opportunity.value.id, form)
   if (!result.ok) {
     submitError.value = result.message
     return
   }
 
-  application.value = result.application
+  application.value = result.data || result.application
   clearDraft(`application_${opportunity.value.id}`)
 }
 
@@ -107,17 +119,22 @@ function chooseRating(score) {
   ratingFeedback.value = { type: '', message: '' }
 }
 
-function submitRating() {
+async function submitRating() {
   if (!opportunity.value) return
 
-  const result = saveOpportunityRating(opportunity.value.id, selectedRating.value)
+  const result = apiEnabled
+    ? await apiSaveRating(opportunity.value.id, selectedRating.value)
+    : saveOpportunityRating(opportunity.value.id, selectedRating.value)
   if (!result.ok) {
     ratingFeedback.value = { type: 'error', message: result.message }
     return
   }
 
-  savedRating.value = result.rating
-  ratingSummary.value = result.summary
+  savedRating.value = result.data || result.rating
+  if (result.data) {
+    const refreshed = await apiGetRating(opportunity.value.id)
+    ratingSummary.value = refreshed.ok ? refreshed.data : ratingSummary.value
+  } else ratingSummary.value = result.summary
   ratingFeedback.value = {
     type: 'success',
     message: result.updated ? 'Your rating has been updated.' : 'Your rating has been saved.',

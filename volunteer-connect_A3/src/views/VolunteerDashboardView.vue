@@ -3,11 +3,12 @@ import { ref } from 'vue'
 import { currentUser } from '../services/authService'
 import { getApplicationsForUser, getSavedOpportunityIds, toggleSavedOpportunity } from '../services/applicationService'
 import { getOpportunityById } from '../services/opportunityStorage'
+import { apiEnabled, apiListApplications } from '../services/apiService'
 
 const savedOpportunities = ref([])
 const applications = ref([])
 
-function loadDashboard() {
+async function loadDashboard() {
   const userId = currentUser.value?.id
   if (!userId) return
 
@@ -15,7 +16,13 @@ function loadDashboard() {
     .map((opportunityId) => getOpportunityById(opportunityId))
     .filter(Boolean)
 
-  applications.value = getApplicationsForUser(userId)
+  const localApplications = getApplicationsForUser(userId)
+  let remoteApplications = null
+  if (apiEnabled) {
+    const result = await apiListApplications()
+    if (result.ok) remoteApplications = result.data || []
+  }
+  applications.value = (remoteApplications || localApplications)
     .map((application) => ({
       ...application,
       opportunity: getOpportunityById(application.opportunityId),

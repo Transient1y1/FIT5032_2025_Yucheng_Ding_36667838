@@ -10,7 +10,7 @@ export default async function handler(request, response) {
   const opportunityId = request.query?.opportunityId || body.opportunityId
   try {
     if (request.method === 'GET') {
-      const result = await withDatabase(async (sql) => { const rows = await sql.query('SELECT ROUND(AVG(score)::numeric, 1) AS average, COUNT(*)::int AS count FROM ratings WHERE opportunity_id = $1', [opportunityId]); return { average: Number(rows[0]?.average || 0), count: rows[0]?.count || 0 } })
+      const result = await withDatabase(async (sql) => { const rows = await sql.query('SELECT ROUND(AVG(score)::numeric, 1) AS average, COUNT(*)::int AS count, MAX(CASE WHEN user_id = $2 THEN score END)::int AS "userScore" FROM ratings WHERE opportunity_id = $1', [opportunityId, session.sub]); return { average: Number(rows[0]?.average || 0), count: rows[0]?.count || 0, userScore: rows[0]?.userScore || null } })
       if (!result.configured) return databaseError(response)
       return response.status(200).json({ ok: true, data: result.value })
     }
@@ -22,4 +22,3 @@ export default async function handler(request, response) {
     return response.status(200).json({ ok: true, data: result.value })
   } catch { return response.status(503).json({ ok: false, message: 'The rating service is temporarily unavailable.' }) }
 }
-

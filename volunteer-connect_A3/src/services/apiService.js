@@ -18,5 +18,11 @@ export function apiSendEmail(payload) { return apiRequest('/api/email/send', { m
 export function apiSendBulkEmail(payload) { return apiRequest('/api/email/bulk', { method: 'POST', body: JSON.stringify(payload) }) }
 export function apiGenerateAi(payload) { return apiRequest('/api/ai', { method: 'POST', body: JSON.stringify(payload) }) }
 export function apiStats() { return apiRequest('/api/admin/stats') }
+export function apiListApplications() { return apiRequest('/api/applications') }
+export function apiCreateApplication(payload) { return apiRequest('/api/applications', { method: 'POST', body: JSON.stringify(payload) }) }
+export function apiUpdateApplicationStatus(id, status) { return apiRequest('/api/applications/status', { method: 'PATCH', body: JSON.stringify({ id, status }) }) }
+export function apiListBookings() { return apiRequest('/api/bookings') }
+export function apiCreateBooking(payload) { return apiRequest('/api/bookings', { method: 'POST', body: JSON.stringify(payload) }) }
+export function apiGetRating(opportunityId) { return apiRequest(`/api/ratings?opportunityId=${encodeURIComponent(opportunityId)}`) }
+export function apiSaveRating(opportunityId, score) { return apiRequest('/api/ratings', { method: 'POST', body: JSON.stringify({ opportunityId, score }) }) }
 export function apiUrl(path) { return `${apiBase}${path}` }
-

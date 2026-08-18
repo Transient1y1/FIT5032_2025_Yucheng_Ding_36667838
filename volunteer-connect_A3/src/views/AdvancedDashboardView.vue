@@ -7,16 +7,20 @@ import { currentUser, getUserForCoordinator } from '../services/authService'
 import { getApplicationsForCoordinator } from '../services/applicationService'
 import { getOpportunities } from '../services/opportunityStorage'
 import { generateAiSuggestion, getCloudStats, getRestApiUrl, sendBulkEmail } from '../services/cloudService'
+import { apiEnabled, apiListApplications } from '../services/apiService'
 import { csvAttachment, downloadCsv, downloadPdf } from '../utils/exportUtils'
 
 Chart.register(BarController, BarElement, CategoryScale, DoughnutController, ArcElement, Legend, LinearScale, Tooltip)
 const opportunities = getOpportunities()
-const applications = ref(getApplicationsForCoordinator().map((application) => ({
-  ...application,
-  applicantName: getUserForCoordinator(application.userId)?.name || 'Volunteer',
-  applicantEmail: getUserForCoordinator(application.userId)?.email || 'Unavailable',
-  opportunityTitle: opportunities.find((item) => item.id === application.opportunityId)?.title || 'Unknown opportunity',
-})))
+function decorateApplications(rows) {
+  return rows.map((application) => ({
+    ...application,
+    applicantName: application.applicantName || getUserForCoordinator(application.userId)?.name || 'Volunteer',
+    applicantEmail: application.applicantEmail || getUserForCoordinator(application.userId)?.email || 'Unavailable',
+    opportunityTitle: opportunities.find((item) => item.id === application.opportunityId)?.title || 'Unknown opportunity',
+  }))
+}
+const applications = ref(decorateApplications(getApplicationsForCoordinator()))
 const selected = ref([])
 const feedback = ref('')
 const aiPrompt = ref('')
@@ -53,9 +57,15 @@ async function bulkEmail() {
 }
 function exportApplications() { downloadCsv('volunteerconnect-applications.csv', applications.value.map(({ applicantName, applicantEmail, opportunityTitle, status, submittedAt }) => ({ applicantName, applicantEmail, opportunityTitle, status, submittedAt }))); feedback.value = 'Applications CSV downloaded.' }
 function exportReport() { downloadPdf('volunteerconnect-admin-report.pdf', 'VolunteerConnect application report', applications.value.map(({ applicantName, opportunityTitle, status, submittedAt }) => ({ applicantName, opportunityTitle, status, submittedAt }))); feedback.value = 'PDF report downloaded.' }
-async function runAi() { const result = await generateAiSuggestion({ prompt: aiPrompt.value || 'Summarise the current volunteer application workload.', context: applications.value.slice(0, 20) }); aiResult.value = result.ok ? result.data?.text || 'The AI service returned no text.' : 'Demo insight: focus coordinator attention on pending applications and upcoming sessions.' }
+async function runAi() { const result = await generateAiSuggestion({ prompt: aiPrompt.value || 'Summarise the current volunteer application workload.', context: applications.value.slice(0, 20) }); aiResult.value = result.ok ? result.text || 'The AI service returned no text.' : 'Demo insight: focus coordinator attention on pending applications and upcoming sessions.' }
 async function loadApiPreview() { try { const response = await fetch(getRestApiUrl('/api/opportunities')); apiResult.value = JSON.stringify(await response.json(), null, 2).slice(0, 1000) } catch { apiResult.value = 'REST API is available after the Neon-backed Vercel API is configured.' } }
-onMounted(async () => { await nextTick(); drawCharts(); if (getCloudStats) getCloudStats().catch(() => {}) })
+onMounted(async () => {
+  if (apiEnabled) {
+    const result = await apiListApplications()
+    if (result.ok) applications.value = decorateApplications(result.data || [])
+  }
+  await nextTick(); drawCharts(); if (getCloudStats) getCloudStats().catch(() => {})
+})
 </script>
 
 <template>
